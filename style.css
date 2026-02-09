@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap');
+
+@font-face {
+	font-family: 'Renos-Rough';
+	src: url('assets/fonts/Renos-Rough.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+/* kleuren root */
+:root {
+	--orange: #ff7520;
+	--light-orange: #ffb181;
+	--green: #8cd003;
+	--light-green: #deff78;
+	--dark-blue: #053631;
+
+	--font-heading: 'Renos-Rough', serif;
+	--font-body: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
