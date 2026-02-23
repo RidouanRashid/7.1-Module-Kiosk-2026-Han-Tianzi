@@ -8,7 +8,7 @@
     <script src="https://kit.fontawesome.com/0f7734b39c.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/0f7734b39c.js" crossorigin="anonymous"></script>
-    <title>HUA</title>
+    <title>Happy herbivore</title>
 
-    <link rel="icon" type="image/png" rel="noopener" targer="_blank" href="includes/image/hualogo.png">
+    <link rel="icon" type="image/png" rel="noopener" targer="_blank" href="assets/logo/logo_big_complete_transparent.webp">
 </head>

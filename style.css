@@ -25,32 +25,131 @@
 	margin: 0;
 }
 
-/* begin kies order pagina */
+/* topbar */
 #achtergrond-topbar {
+	position: sticky;
+	top: 0;
+	left: 0;
+
+	width: 100%;
+	height: 180px;
+	z-index: 10;
+
 	background-color: #ff7520;
 
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 
-	height: 250px;
-	border: 3px solid #deff78;
-}
-
-#winkelmandje {
-	height: 200px;
-	width: auto;
-	padding-top: 57px;
+	border: 4px solid #deff78;
 }
 
 #Happy-Herbivore-logo {
-	height: 200px;
+	height: 180px;
 	width: auto;
 }
 
 #Happy-Herbivore-Tekst {
-	height: 400px;
+	height: 130px;
 	width: auto;
+}
+
+#winkelmandje {
+	height: 155px;
+	width: auto;
+	padding-top: 36px;
+}
+
+/* einde topbar */
+
+/* begin kies order pagina */
+
+
+#achtergrond-orderscherm-start {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+}
+
+#achtergrond-sidebar {
+	width: 200px;
+	position: fixed;
+	top: 180px;
+	left: 0;
+
+	height: calc(100vh - 180px);
+	overflow: hidden;
+
+	background-color: #ff7520;
+	border: 4px solid #deff78;
+
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-content: space-around;
+}
+
+#menu-icoon,
+#breakfast-icoon,
+#lunch-icoon,
+#handhelds-icoon,
+#sides-icoon,
+#drinks-icoon,
+#dips-icoon {
+	height: 53px;
+	width: auto;
+}
+
+.catogorie {
+	height: 90px;
+	width: 100px;
+	padding: 10px;
+	margin: 10px;
+
+	border: 3px solid #deff78;
+	border-radius: 6px;
+	background-color: #FFB68A;
+
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+
+	font-family: 'Renos-Rough';
+	box-shadow: 0 4px 10px 2px rgba(0, 0, 0, 0.4);
+}
+
+.catogorie p {
+	margin-top: -15px;
+	text-align: center;
+}
+
+#body-box {
+	display: flex;
+	min-height: 0;
+	flex-wrap: wrap;
+
+	margin-left: 200px;
+}
+
+#titel-box {
+	flex: 1;
+	height: 200px;
+	width: auto;
+	border: 3px solid #deff78;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#welkom-tekst {
+	font-family: 'Renos-Rough';
+}
+
+#content-begin-pagina {
+	flex: 1;
+	display: flex;
 }
 
 /* eind kies order pagina */
