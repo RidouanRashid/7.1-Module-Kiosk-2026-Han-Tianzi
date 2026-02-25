@@ -66,6 +66,23 @@ include("includes/header.php");
                         <div class="kaart"><img src="assets/menu/Breakfast/breakfast1.png" alt="Morning Boost Açaí Bowl (VG)"></div>
                     </div>
                 </div>
+
+                <div class="slideshow-box">
+                    <div class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip1.png" alt="Classic Hummus (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip2.png" alt="Avocado Lime Crema (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip3.png" alt="Greek Yogurt Ranch (V)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip4.png" alt="Spicy Sriracha Mayo (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip5.png" alt="Peanut Satay Sauce (VG)"></div>
+                    </div>
+                    <div aria-hidden class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip1.png" alt="Classic Hummus (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip2.png" alt="Avocado Lime Crema (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip3.png" alt="Greek Yogurt Ranch (V)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip4.png" alt="Spicy Sriracha Mayo (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Signature-Dips/dip5.png" alt="Peanut Satay Sauce (VG)"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
