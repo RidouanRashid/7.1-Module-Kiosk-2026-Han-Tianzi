@@ -162,7 +162,7 @@
 
 /* slideshow */
 .slideshow-box {
-	margin: 100px auto;
+	margin: 50px auto;
 	width: 100%;
 	display: flex;
 	overflow: hidden;
@@ -179,7 +179,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
-	animation: spin 13s infinite linear;
+	animation: spin 18s infinite linear;
 }
 
 .kaart {

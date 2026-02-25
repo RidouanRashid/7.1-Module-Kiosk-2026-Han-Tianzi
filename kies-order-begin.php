@@ -32,6 +32,41 @@ include("includes/header.php");
                         <div class="kaart"><img src="assets/menu/Handhelds/handheld3.png" alt="Smoky BBQ Jackfruit Slider (VG)"></div>
                     </div>
                 </div>
+
+                <div class="slideshow-box">
+                    <div class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Drinks/drink1.png" alt="Green Glow Smoothie (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink4.png" alt="Berry Blast Smoothie (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink2.png" alt="Iced Matcha Latte (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink3.png" alt="Fruit-Infused Water (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink5.png" alt="Citrus Cooler (VG)"></div>
+                    </div>
+                    <div aria-hidden class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Drinks/drink1.png" alt="Green Glow Smoothie (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink4.png" alt="Berry Blast Smoothie (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink2.png" alt="Iced Matcha Latte (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink3.png" alt="Fruit-Infused Water (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Drinks/drink5.png" alt="Citrus Cooler (VG)"></div>
+                    </div>
+                </div>
+
+                <div class="slideshow-box">
+                    <div class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch1.png" alt="Tofu Power Tahini Bowl (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch2.png" alt="The Supergreen Harvest (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch3.png" alt="Mediterranean Falafel Bowl (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch4.png" alt="Warm Teriyaki Tempeh Bowl (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Breakfast/breakfast1.png" alt="Morning Boost Açaí Bowl (VG)"></div>
+                    </div>
+                    <div aria-hidden class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch1.png" alt="Tofu Power Tahini Bowl (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch2.png" alt="The Supergreen Harvest (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch3.png" alt="Mediterranean Falafel Bowl (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Lunch&Dinner/lunch4.png" alt="Warm Teriyaki Tempeh Bowl (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Breakfast/breakfast1.png" alt="Morning Boost Açaí Bowl (VG)"></div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 </body>
