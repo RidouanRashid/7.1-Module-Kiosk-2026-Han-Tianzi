@@ -94,6 +94,11 @@
 	align-content: space-around;
 }
 
+#achtergrond-sidebar a {
+	text-decoration: none;
+	color: inherit;
+}
+
 #menu-icoon,
 #breakfast-icoon,
 #lunch-icoon,
@@ -211,4 +216,71 @@
 }
 
 /* slideshow */
-/* eind kies order pagina */
+
+/* kies order breakfast */
+.content-kies-orders {
+	flex: 1;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.content-kies-orders a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.productContainer {
+	padding-top: 20px;
+	width: auto;
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+.product {
+	width: 230px;
+	height: auto;
+	padding: 10px;
+
+	background: #FF7520;
+	border: 3px solid #deff78;
+}
+
+.product img {
+	height: 200px;
+	width: auto;
+}
+
+.naam-product {
+	font-family: 'Renos Rough';
+	font-style: normal;
+	font-size: 15px;
+	text-align: center;
+	padding-bottom: 8px;
+}
+
+.prijs-kcal-box {
+	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.prijs {
+	font-family: 'Renos Rough';
+	font-style: normal;
+	font-size: 15px;
+	text-align: center;
+
+	color: #5B8506;
+}
+
+.kcal {
+	font-family: 'Renos Rough';
+	font-style: normal;
+	font-size: 15px;
+	text-align: center;
+}
+
+/* kies order breakfast einde*/
+/* einde kies order pagina */

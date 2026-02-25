@@ -1,3 +1,7 @@
+<?php
+$fmt = new NumberFormatter('nl_NL', NumberFormatter::CURRENCY);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 

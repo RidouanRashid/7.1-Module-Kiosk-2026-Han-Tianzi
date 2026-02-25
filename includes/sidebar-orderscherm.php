@@ -5,10 +5,12 @@
         <p>Menu</p>
     </div>
 
-    <div class="catogorie">
-        <img src="assets/pagina-deco/icoontjes/breakfast-removebg-preview.png" id="breakfast-icoon"><br>
-        <p>Breakfast</p>
-    </div>
+    <a href="kies-orders.php">
+        <div class="catogorie">
+            <img src="assets/pagina-deco/icoontjes/breakfast-removebg-preview.png" id="breakfast-icoon"><br>
+            <p>Breakfast</p>
+        </div>
+    </a>
 
     <div class="catogorie">
         <img src="assets/pagina-deco/icoontjes/lunch-removebg-preview.png" id="lunch-icoon"><br>
