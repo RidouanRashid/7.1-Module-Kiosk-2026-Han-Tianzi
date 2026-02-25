@@ -63,16 +63,21 @@
 /* einde topbar */
 
 /* begin kies order pagina */
-
-
 #achtergrond-orderscherm-start {
 	display: flex;
 	min-height: 100vh;
 	flex-direction: column;
+	overflow-x: hidden;
+}
+
+#body-box {
+	margin-left: 0;
+	padding-left: 188px;
+	box-sizing: border-box;
 }
 
 #achtergrond-sidebar {
-	width: 200px;
+	width: 180px;
 	position: fixed;
 	top: 180px;
 	left: 0;
@@ -124,32 +129,86 @@
 	text-align: center;
 }
 
-#body-box {
+#content-begin-pagina {
+	flex: 1;
 	display: flex;
-	min-height: 0;
 	flex-wrap: wrap;
-
-	margin-left: 200px;
 }
 
-#titel-box {
-	flex: 1;
+.titel-box {
+	width: 100%;
 	height: 200px;
-	width: auto;
 	border: 3px solid #deff78;
 
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.welkom-tekst {
+	font-family: 'Renos-Rough';
+	font-size: 35px;
+	color: #FF7520;
+	text-align: center;
+}
+
+.categorie-naam-tekst {
+	font-family: 'Noto Sans';
+	font-size: 35px;
+	color: #8cd003;
+	padding-top: 20px;
+}
+
+/* slideshow */
+.slideshow-box {
+	margin: 100px auto;
+	width: 100%;
+	display: flex;
+	overflow: hidden;
+	gap: 8px;
+	position: relative;
+}
+
+.slideshow-box::-webkit-scrollbar {
+	display: none;
+}
+
+.slideshow-groep {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	animation: spin 13s infinite linear;
+}
+
+.kaart {
+	flex: 0 0 180px;
+	height: 180px;
+	padding: 0;
+	border-radius: .2em;
+	overflow: hidden;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-#welkom-tekst {
-	font-family: 'Renos-Rough';
+.kaart img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 }
 
-#content-begin-pagina {
-	flex: 1;
-	display: flex;
+@keyframes spin {
+	from {
+		transform: translateX(0);
+	}
+
+	to {
+		transform: translateX(-101%);
+	}
 }
 
+/* slideshow */
 /* eind kies order pagina */

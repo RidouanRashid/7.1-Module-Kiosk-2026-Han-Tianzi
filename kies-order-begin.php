@@ -12,11 +12,26 @@ include("includes/header.php");
             include("includes/sidebar-orderscherm.php");
             ?>
             <div id="content-begin-pagina">
-                <div id="titel-box">
-                    <p id="kies-order-begin.php">Welcome by Happy Herbivore</p>
+                <div class="titel-box">
+                    <p class="welkom-tekst">Welcome by Happy Herbivore</p>
+                    <p class="categorie-naam-tekst">Choose your order</p>
                 </div>
-                <div id="slideshow-box"></div>
+                <div class="slideshow-box">
+                    <div class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Breakfast/breakfast3.png" alt="Peanut Butter & Cacao Toast (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Breakfast/breakfast2.png" alt="The Garden Breakfast Wrap (V)"></div>
+                        <div class="kaart"><img src="assets/menu/Handhelds/handheld1.png" alt="Zesty Chickpea Hummus Wrap (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Handhelds/handheld2.png" alt="Avocado & Halloumi Toastie (V)"></div>
+                        <div class="kaart"><img src="assets/menu/Handhelds/handheld3.png" alt="Smoky BBQ Jackfruit Slider (VG)"></div>
+                    </div>
+                    <div aria-hidden class="slideshow-groep">
+                        <div class="kaart"><img src="assets/menu/Breakfast/breakfast3.png" alt="Peanut Butter & Cacao Toast (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Breakfast/breakfast2.png" alt="The Garden Breakfast Wrap (V)"></div>
+                        <div class="kaart"><img src="assets/menu/Handhelds/handheld1.png" alt="Zesty Chickpea Hummus Wrap (VG)"></div>
+                        <div class="kaart"><img src="assets/menu/Handhelds/handheld2.png" alt="Avocado & Halloumi Toastie (V)"></div>
+                        <div class="kaart"><img src="assets/menu/Handhelds/handheld3.png" alt="Smoky BBQ Jackfruit Slider (VG)"></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 </body>
