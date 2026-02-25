@@ -19,3 +19,196 @@
 	--font-heading: 'Renos-Rough', serif;
 	--font-body: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
+
+* {
+	padding: 0;
+	margin: 0;
+}
+
+/* topbar */
+#achtergrond-topbar {
+	position: sticky;
+	top: 0;
+	left: 0;
+
+	width: 100%;
+	height: 180px;
+	z-index: 10;
+
+	background-color: #ff7520;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	border: 4px solid #deff78;
+}
+
+#Happy-Herbivore-logo {
+	height: 180px;
+	width: auto;
+}
+
+#Happy-Herbivore-Tekst {
+	height: 130px;
+	width: auto;
+}
+
+#winkelmandje {
+	height: 155px;
+	width: auto;
+	padding-top: 36px;
+}
+
+/* einde topbar */
+
+/* begin kies order pagina */
+#achtergrond-orderscherm-start {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+	overflow-x: hidden;
+}
+
+#body-box {
+	margin-left: 0;
+	padding-left: 188px;
+	box-sizing: border-box;
+}
+
+#achtergrond-sidebar {
+	width: 180px;
+	position: fixed;
+	top: 180px;
+	left: 0;
+
+	height: calc(100vh - 180px);
+	overflow: hidden;
+
+	background-color: #ff7520;
+	border: 4px solid #deff78;
+
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-content: space-around;
+}
+
+#menu-icoon,
+#breakfast-icoon,
+#lunch-icoon,
+#handhelds-icoon,
+#sides-icoon,
+#drinks-icoon,
+#dips-icoon {
+	height: 53px;
+	width: auto;
+}
+
+.catogorie {
+	height: 90px;
+	width: 100px;
+	padding: 10px;
+	margin: 10px;
+
+	border: 3px solid #deff78;
+	border-radius: 6px;
+	background-color: #FFB68A;
+
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: center;
+
+	font-family: 'Renos-Rough';
+	box-shadow: 0 4px 10px 2px rgba(0, 0, 0, 0.4);
+}
+
+.catogorie p {
+	margin-top: -15px;
+	text-align: center;
+}
+
+#content-begin-pagina {
+	flex: 1;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.titel-box {
+	width: 100%;
+	height: 200px;
+	border: 3px solid #deff78;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.welkom-tekst {
+	font-family: 'Renos-Rough';
+	font-size: 35px;
+	color: #FF7520;
+	text-align: center;
+}
+
+.categorie-naam-tekst {
+	font-family: 'Noto Sans';
+	font-size: 35px;
+	color: #8cd003;
+	padding-top: 20px;
+}
+
+/* slideshow */
+.slideshow-box {
+	margin: 50px auto;
+	width: 100%;
+	display: flex;
+	overflow: hidden;
+	gap: 8px;
+	position: relative;
+}
+
+.slideshow-box::-webkit-scrollbar {
+	display: none;
+}
+
+.slideshow-groep {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	animation: spin 18s infinite linear;
+}
+
+.kaart {
+	flex: 0 0 180px;
+	height: 180px;
+	padding: 0;
+	border-radius: .2em;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.kaart img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+@keyframes spin {
+	from {
+		transform: translateX(0);
+	}
+
+	to {
+		transform: translateX(-101%);
+	}
+}
+
+/* slideshow */
+/* eind kies order pagina */
