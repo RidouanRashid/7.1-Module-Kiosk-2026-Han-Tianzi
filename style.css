@@ -76,14 +76,6 @@
 	margin-left: 0;
 	padding-left: 188px;
 	box-sizing: border-box;
-
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	min-height: calc(100vh - 180px);
-
-	overflow-x: hidden;
-	overflow-y: visible;
 }
 
 #achtergrond-sidebar {
@@ -238,6 +230,20 @@
 .content-kies-orders a {
 	text-decoration: none;
 	color: inherit;
+}
+
+#body-box-kies-order {
+	margin-left: 0;
+	padding-left: 188px;
+	box-sizing: border-box;
+
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 180px);
+
+	overflow-x: hidden;
+	overflow-y: visible;
 }
 
 .productContainer {

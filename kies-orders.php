@@ -28,7 +28,7 @@ $pageTitle = $categories[$cat];
 
         <?php include("includes/topbar-orderscherm.php"); ?>
 
-        <div id="body-box">
+        <div id="body-box-kies-order">
 
             <?php include("includes/sidebar-orderscherm.php"); ?>
 
