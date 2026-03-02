@@ -23,9 +23,14 @@
 * {
 	padding: 0;
 	margin: 0;
-	overflow-x: hidden;
-	overflow-y: hidden;
+	box-sizing: border-box;
 }
+
+html,
+body {
+	overflow: hidden;
+}
+
 
 /* topbar */
 #achtergrond-topbar {
@@ -74,7 +79,7 @@
 
 #body-box {
 	margin-left: 0;
-	padding-left: 188px;
+	padding-left: 178px;
 	box-sizing: border-box;
 }
 
@@ -113,8 +118,8 @@
 }
 
 .catogorie {
-	height: 90px;
-	width: 100px;
+	height: 125px;
+	width: 125px;
 	padding: 10px;
 	margin: 10px;
 
@@ -234,7 +239,7 @@
 
 #body-box-kies-order {
 	margin-left: 0;
-	padding-left: 188px;
+	padding-left: 178px;
 	box-sizing: border-box;
 
 	flex: 1;
