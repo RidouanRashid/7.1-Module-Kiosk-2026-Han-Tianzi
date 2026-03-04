@@ -806,7 +806,14 @@ body {
 * {
 	padding: 0;
 	margin: 0;
+	box-sizing: border-box;
 }
+
+html,
+body {
+	overflow: hidden;
+}
+
 
 /* topbar */
 #achtergrond-topbar {
@@ -848,14 +855,14 @@ body {
 /* begin kies order pagina */
 #achtergrond-orderscherm-start {
 	display: flex;
-	min-height: 100vh;
+	height: 100vh;
 	flex-direction: column;
 	overflow-x: hidden;
 }
 
 #body-box {
 	margin-left: 0;
-	padding-left: 188px;
+	padding-left: 178px;
 	box-sizing: border-box;
 }
 
@@ -877,6 +884,11 @@ body {
 	align-content: space-around;
 }
 
+#achtergrond-sidebar a {
+	text-decoration: none;
+	color: inherit;
+}
+
 #menu-icoon,
 #breakfast-icoon,
 #lunch-icoon,
@@ -889,8 +901,8 @@ body {
 }
 
 .catogorie {
-	height: 90px;
-	width: 100px;
+	height: 125px;
+	width: 125px;
 	padding: 10px;
 	margin: 10px;
 
@@ -922,6 +934,7 @@ body {
 	width: 100%;
 	height: 200px;
 	border: 3px solid #deff78;
+	background-color: white;
 
 	display: flex;
 	flex-direction: column;
@@ -994,4 +1007,121 @@ body {
 }
 
 /* slideshow */
-/* eind kies order pagina */
+
+/* kies order*/
+
+.content-kies-orders {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.content-kies-orders a {
+	text-decoration: none;
+	color: inherit;
+}
+
+#body-box-kies-order {
+	margin-left: 0;
+	padding-left: 178px;
+	box-sizing: border-box;
+
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 180px);
+
+	overflow-x: hidden;
+	overflow-y: visible;
+}
+
+.productContainer {
+	flex: 1;
+	width: 100%;
+
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	justify-content: flex-start;
+	gap: 25px;
+	padding: 40px;
+
+	background-image: url('assets/pagina-deco/achtergrond-kies-order.png');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.product {
+	width: 210px;
+	min-height: 225px;
+	height: auto;
+
+	display: flex;
+	flex-direction: column;
+
+	background: #FF7520;
+	border: 4px solid #deff78;
+	border-radius: 15px;
+	padding-bottom: 6px;
+	overflow: hidden;
+}
+
+.product img {
+	height: 200px;
+	width: auto;
+}
+
+.img-box {
+	width: 280px;
+	height: 135px;
+	margin-left: -35px;
+
+	background: #FFB181;
+	border-radius: 0px 0px 150px 150px;
+}
+
+.naam-product {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	font-family: 'Renos-Rough';
+	font-size: 15px;
+	text-align: center;
+	padding: 10px;
+}
+
+.prijs-kcal-box {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+.prijs {
+	font-family: 'Renos-Rough';
+	font-style: normal;
+	font-size: 15px;
+	text-align: center;
+
+	color: #5B8506;
+}
+
+.kcal {
+	font-family: 'Renos-Rough';
+	font-style: normal;
+	font-size: 15px;
+	text-align: center;
+}
+
+.tekst-box {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+/* kies order breakfast einde*/
+/* einde kies order pagina */
