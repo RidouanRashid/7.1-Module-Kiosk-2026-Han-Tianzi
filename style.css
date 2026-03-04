@@ -79,6 +79,10 @@ body {
 	background: url('assets/pagina-deco/20260205_0107_Image Generation_remix_01kgnhy8g2enyt4d97zkdjsfmz.png') center/cover no-repeat;
 }
 
+.thankyou-screen {
+	background: #f9c9a8 url('assets/pagina-deco/blaadjes.png') center/cover no-repeat;
+}
+
 .screen.active {
 	display: flex;
 }
@@ -764,6 +768,10 @@ body {
 	align-items: center;
 	gap: var(--space-2);
 	text-align: center;
+}
+
+.mock-info-panel--thankyou {
+	background: #fff;
 }
 
 .mock-info-title {
