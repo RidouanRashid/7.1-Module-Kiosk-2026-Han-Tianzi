@@ -10,22 +10,21 @@ $id = (int) $_GET['id'];
 
 try {
     $stmt = $conn->prepare("
-        SELECT 
-            p.product_id,
-            p.NAME AS titel,
-            p.description AS info,
-            p.price,
-            p.kcal,
-            p.available,
-            c.NAME AS category_name,
-            c.description AS category_description,
-            i.filename AS photo,
-            i.description AS image_description
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.category_id
-        LEFT JOIN images i ON p.image_id = i.image_id
-        WHERE p.product_id = :id
-    ");
+    SELECT 
+        p.product_id,
+        p.NAME AS titel,
+        p.description AS info,
+        p.price,
+        p.kcal,
+        p.available,
+        p.`V-VG` AS food_type,
+        c.NAME AS category_name,
+        i.filename AS photo
+    FROM products p
+    LEFT JOIN categories c ON p.category_id = c.category_id
+    LEFT JOIN images i ON p.image_id = i.image_id
+    WHERE p.product_id = :id
+");
 
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
@@ -43,11 +42,19 @@ try {
     $kcal = $product['kcal'];
     $available = $product['available'];
     $category = $product['category_name'];
-    $category_description = $product['category_description'];
-    $image_description = $product['image_description'];
+    $cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
 
     $categoryFolder = strtolower(trim($category));
     $categoryFolder = str_replace(' ', '', $categoryFolder);
+
+    $foodType = $product['food_type'];
+    $foodIcon = '';
+
+    if ($foodType === 'Vegan') {
+        $foodIcon = 'assets/pagina-deco/icoontjes/vegan.png';
+    } elseif ($foodType === 'Vegetarian') {
+        $foodIcon = 'assets/pagina-deco/icoontjes/vegetarian.png';
+    }
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit;
@@ -63,7 +70,11 @@ include("includes/header.php");
 
         <div id="detail-image-box">
             <?php if (!empty($image)) : ?>
-                <img src="assets/menu/<?php echo htmlspecialchars($categoryFolder); ?>/<?php echo htmlspecialchars($image); ?>" alt="<?php echo htmlspecialchars($title); ?>">
+                <img src="assets/menu/<?php echo htmlspecialchars($categoryFolder); ?>/<?php echo htmlspecialchars($image); ?>" id='detail-eten-img' alt="<?php echo htmlspecialchars($title); ?>">
+            <?php endif; ?>
+
+            <?php if (!empty($foodIcon)) : ?>
+                <img id="food-label-icon" src="<?php echo htmlspecialchars($foodIcon); ?>" alt="<?php echo htmlspecialchars($foodType); ?>">
             <?php endif; ?>
         </div>
 
@@ -82,37 +93,50 @@ include("includes/header.php");
                     <button type="button" class="aantal-knop plus">+</button>
                 </div>
 
-                <p id="detail-kcal"><?php echo htmlspecialchars($kcal); ?> KCAL</p>
+                <p id="detail-kcal" data-kcal="<?php echo htmlspecialchars($kcal); ?>">
+                    <?php echo htmlspecialchars($kcal); ?> KCAL
+                </p>
+            </div>
+
+            <div id="detail-knoppen">
+                <a href="kies-orders.php?cat=<?php echo (int)$cat; ?>" id="cancel-knop">CANCEL</a>
+
+                <form method="POST" action="winkelmand.php" id="add-to-order-form">
+                    <input type="hidden" name="product_id" value="<?php echo $id; ?>">
+                    <input type="hidden" name="aantal" id="aantal-input" value="1">
+                    <button type="submit" id="add-to-order-knop">ADD TO ORDER</button>
+                </form>
             </div>
         </div>
-    </div>
 
-    <script>
-        const minBtn = document.querySelector('.min');
-        const plusBtn = document.querySelector('.plus');
-        const aantalSpan = document.getElementById('aantal');
-        const prijsElement = document.getElementById('detail-prijs');
+        <script>
+            const minBtn = document.querySelector('.min');
+            const plusBtn = document.querySelector('.plus');
+            const aantalSpan = document.getElementById('aantal');
+            const aantalInput = document.getElementById('aantal-input');
+            const prijsElement = document.getElementById('detail-prijs');
 
-        let aantal = 1;
-        const basisPrijs = parseFloat(prijsElement.dataset.prijs);
+            let aantal = 1;
+            const basisPrijs = parseFloat(prijsElement.dataset.prijs);
 
-        function updatePrijs() {
-            const totaalPrijs = basisPrijs * aantal;
-            prijsElement.textContent = '€ ' + totaalPrijs.toFixed(2);
-        }
+            function updateGegevens() {
+                const totaalPrijs = basisPrijs * aantal;
 
-        plusBtn.addEventListener('click', () => {
-            aantal++;
-            aantalSpan.textContent = aantal;
-            updatePrijs();
-        });
-
-        minBtn.addEventListener('click', () => {
-            if (aantal > 1) {
-                aantal--;
                 aantalSpan.textContent = aantal;
-                updatePrijs();
+                aantalInput.value = aantal;
+                prijsElement.textContent = '€ ' + totaalPrijs.toFixed(2);
             }
-        });
-    </script>
+
+            plusBtn.addEventListener('click', () => {
+                aantal++;
+                updateGegevens();
+            });
+
+            minBtn.addEventListener('click', () => {
+                if (aantal > 1) {
+                    aantal--;
+                    updateGegevens();
+                }
+            });
+        </script>
 </body>

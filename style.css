@@ -1051,8 +1051,8 @@ body {
 	flex-wrap: wrap;
 	align-content: flex-start;
 	justify-content: flex-start;
-	gap: 25px;
-	padding: 40px;
+	gap: 35px;
+	padding: 35px;
 
 	background-image: url('assets/pagina-deco/achtergrond-kies-order.png');
 	background-size: cover;
@@ -1075,9 +1075,22 @@ body {
 	overflow: hidden;
 }
 
-.product img {
-	height: 200px;
+.product-food-icon {
+	position: absolute;
+	margin-bottom: 83px;
+	margin-right: 157px;
 	width: auto;
+	height: 40px;
+	object-fit: contain;
+	z-index: 10;
+	padding: 0;
+}
+
+.product-img {
+	width: auto;
+	max-width: 190px;
+	height: 145px;
+	padding: 20px;
 }
 
 .img-box {
@@ -1087,6 +1100,10 @@ body {
 
 	background: #FFB181;
 	border-radius: 0px 0px 150px 150px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .naam-product {
@@ -1135,19 +1152,16 @@ body {
 /* einde kies order pagina */
 
 /* detail pagina begin */
+
 #achtergrond-detail {
 	flex: 1;
 	width: 100%;
-	min-height: 100vh;
-
+	height: calc(100vh - 180px);
 	display: flex;
-	justify-content: center;
-	flex-wrap: wrap;
-	align-items: center;
 	flex-direction: column;
-
+	align-items: center;
+	overflow: hidden;
 	background-color: #FFCBAB;
-
 	background-image: url('assets/pagina-deco/achtergrond-detail.png');
 	background-size: cover;
 	background-position: center;
@@ -1155,13 +1169,23 @@ body {
 }
 
 #detail-image-box {
+	position: relative;
 	background-size: cover;
 	height: auto;
-	padding-top: 80px;
 	padding: 100px;
 }
 
-#detail-image-box img {
+#food-label-icon {
+	position: absolute;
+	top: 69px;
+	right: 68px;
+	width: 95px;
+	height: auto;
+	object-fit: contain;
+	z-index: 5;
+}
+
+#detail-eten-img {
 	height: 500px;
 	width: auto;
 	border: 9px solid #deff78;
@@ -1172,32 +1196,42 @@ body {
 #detail-info-box {
 	flex: 1;
 	width: 100%;
-	padding: 60px;
+	max-height: 100%;
+
+	padding: 30px 20px;
 	background: #FFFFFF;
 	border-top: 8px solid #DEFF78;
-	border-radius: 100px 100px 0px 0px;
+	border-radius: 100px 100px 0 0;
 
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
 	flex-wrap: wrap;
-	align-content: flex-start;
+}
+
+#detail-titel,
+#detail-beschrijving,
+#detail-onderkant,
+#detail-knoppen {
+	max-width: 100%;
 }
 
 #detail-titel {
-	font-size: 70px;
-	font-family: Renos-Rough;
+	font-size: 6vw;
+	font-family: 'Renos-Rough';
 	text-align: center;
 	color: #053631;
-	width: 700px;
+	width: min(100%, 760px);
 }
 
 #detail-beschrijving {
-	font-size: 55px;
+	font-size: 4vw;
 	font-family: 'Noto Sans';
 	text-align: center;
 	color: #053631;
-	width: 800px;
-	padding-top: 20px;
+	width: min(100%, 800px);
+	padding-top: 18px;
 }
 
 #detail-onderkant {
@@ -1205,28 +1239,32 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	gap: 50px;
-	padding-top: 80px;
-	padding-left: 65px;
 	flex-wrap: wrap;
+	gap: 50px;
+	padding-top: 60px;
 }
 
 #detail-prijs {
-	font-size: 55px;
+	font-size: 4vw;
 	font-family: 'Noto Sans';
-	font-weight: 700;
+	font-weight: bold;
+
 	color: #5B8506;
 	margin: 0;
 	padding: 0;
 	width: auto;
+	padding-right: 34px;
 }
 
 #detail-aantal-box {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	width: 260px;
-	height: 95px;
+	justify-self: center;
+
+	width: 250px;
+	height: 90px;
+
 	padding: 0 20px;
 	border: 5px solid #DEFF78;
 	border-radius: 999px;
@@ -1234,14 +1272,15 @@ body {
 }
 
 .aantal-knop {
-	width: 55px;
-	height: 55px;
+	width: 45px;
+	height: 45px;
+
 	border: none;
 	border-radius: 50%;
 	font-size: 36px;
-	font-weight: 700;
+	font-weight: bold;
 	line-height: 1;
-	cursor: pointer;
+
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1263,18 +1302,64 @@ body {
 	text-align: center;
 	font-size: 42px;
 	font-family: 'Noto Sans';
-	font-weight: 700;
+	font-weight: bold;
 	color: #053631;
 }
 
 #detail-kcal {
-	font-size: 55px;
+	font-size: 4vw;
 	font-family: 'Noto Sans';
-	font-weight: 700;
+	font-weight: bold;
 	color: #053631;
 	margin: 0;
 	padding: 0;
 	width: auto;
+}
+
+#detail-knoppen {
+	width: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+
+	gap: 20px;
+	padding-top: 50px;
+}
+
+#cancel-knop,
+#add-to-order-knop {
+	width: 250px;
+	height: 90px;
+	padding: 48px;
+
+	border-radius: 999px;
+	border: 3px solid #DEFF78;
+	font-family: 'Renos-Rough';
+	font-size: 3vw;
+	font-weight: bold;
+	text-decoration: none;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+}
+
+#cancel-knop {
+	background-color: #ff8a1f;
+	color: #053631;
+}
+
+#add-to-order-knop {
+	background-color: #8cd003;
+	color: #053631;
+	border: 3px solid #DEFF78;
+}
+
+#add-to-order-form {
+	margin: 0;
 }
 
 /* detail pagina einde */
