@@ -41,7 +41,7 @@ body {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
-	background: #000;
+	background: #ffffff;
 	color: #1f1f1f;
 	font-family: var(--font-body);
 	touch-action: manipulation;
@@ -855,13 +855,13 @@ body {
 #winkelmandje {
 	height: 155px;
 	width: auto;
-	padding-top: 36px;
 }
 
 /* einde topbar */
 
 /* begin kies order pagina */
-#achtergrond-orderscherm-start {
+#achtergrond-orderscherm-start,
+#achtergrond-orders {
 	display: flex;
 	height: 100vh;
 	flex-direction: column;
@@ -1133,3 +1133,148 @@ body {
 
 /* kies order breakfast einde*/
 /* einde kies order pagina */
+
+/* detail pagina begin */
+#achtergrond-detail {
+	flex: 1;
+	width: 100%;
+	min-height: 100vh;
+
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-items: center;
+	flex-direction: column;
+
+	background-color: #FFCBAB;
+
+	background-image: url('assets/pagina-deco/achtergrond-detail.png');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+#detail-image-box {
+	background-size: cover;
+	height: auto;
+	padding-top: 80px;
+	padding: 100px;
+}
+
+#detail-image-box img {
+	height: 500px;
+	width: auto;
+	border: 9px solid #deff78;
+	border-radius: 25px;
+	background-size: cover;
+}
+
+#detail-info-box {
+	flex: 1;
+	width: 100%;
+	padding: 60px;
+	background: #FFFFFF;
+	border-top: 8px solid #DEFF78;
+	border-radius: 100px 100px 0px 0px;
+
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-content: flex-start;
+}
+
+#detail-titel {
+	font-size: 70px;
+	font-family: Renos-Rough;
+	text-align: center;
+	color: #053631;
+	width: 700px;
+}
+
+#detail-beschrijving {
+	font-size: 55px;
+	font-family: 'Noto Sans';
+	text-align: center;
+	color: #053631;
+	width: 800px;
+	padding-top: 20px;
+}
+
+#detail-onderkant {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 50px;
+	padding-top: 80px;
+	padding-left: 65px;
+	flex-wrap: wrap;
+}
+
+#detail-prijs {
+	font-size: 55px;
+	font-family: 'Noto Sans';
+	font-weight: 700;
+	color: #5B8506;
+	margin: 0;
+	padding: 0;
+	width: auto;
+}
+
+#detail-aantal-box {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 260px;
+	height: 95px;
+	padding: 0 20px;
+	border: 5px solid #DEFF78;
+	border-radius: 999px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.aantal-knop {
+	width: 55px;
+	height: 55px;
+	border: none;
+	border-radius: 50%;
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Noto Sans';
+}
+
+.aantal-knop.min {
+	background-color: #ff8a1f;
+	color: #053631;
+}
+
+.aantal-knop.plus {
+	background-color: #8cd003;
+	color: #053631;
+}
+
+#aantal {
+	min-width: 30px;
+	text-align: center;
+	font-size: 42px;
+	font-family: 'Noto Sans';
+	font-weight: 700;
+	color: #053631;
+}
+
+#detail-kcal {
+	font-size: 55px;
+	font-family: 'Noto Sans';
+	font-weight: 700;
+	color: #053631;
+	margin: 0;
+	padding: 0;
+	width: auto;
+}
+
+/* detail pagina einde */

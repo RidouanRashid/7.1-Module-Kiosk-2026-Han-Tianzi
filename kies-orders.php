@@ -8,8 +8,8 @@ $categories = [
     2 => "Choose your lunch & dinner",
     3 => "Choose your handhelds",
     4 => "Choose your sides",
-    5 => "Choose your drinks",
-    6 => "Choose your dips",
+    5 => "Choose your dips",
+    6 => "Choose your drinks",
 ];
 
 // categorie uit de URL halen
@@ -66,7 +66,7 @@ $pageTitle = $categories[$cat];
                                 <a href="detail.php?id=<?php echo (int)$v['product_id']; ?>">
                                     <div class="img-box">
                                         <?php if (!empty($v['filename'])): ?>
-                                            <img src="assets/<?php echo htmlspecialchars($v['filename']); ?>" alt="">
+                                            <img src="assets/menu/<?php echo htmlspecialchars($v['filename']); ?>" alt="">
                                         <?php endif; ?>
                                     </div>
 
