@@ -33,14 +33,14 @@
         </div>
     </a>
 
-    <a href="kies-orders.php?cat=5">
+    <a href="kies-orders.php?cat=6">
         <div class="catogorie">
             <img src="assets/pagina-deco/icoontjes/drinks-removebg-preview.png" id="drinks-icoon"><br>
             <p>Drinks</p>
         </div>
     </a>
 
-    <a href="kies-orders.php?cat=6">
+    <a href="kies-orders.php?cat=5">
         <div class="catogorie">
             <img src="assets/pagina-deco/icoontjes/dips-removebg-preview.png" id="dips-icoon"><br>
             <p>Dips</p>
