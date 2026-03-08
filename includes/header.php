@@ -1,5 +1,15 @@
 <?php
-$fmt = new NumberFormatter('nl_NL', NumberFormatter::CURRENCY);
+if (class_exists('NumberFormatter')) {
+    $fmt = new NumberFormatter('nl_NL', NumberFormatter::CURRENCY);
+} else {
+    $fmt = new class {
+        public function formatCurrency(float $amount, string $currency): string
+        {
+            $symbol = $currency === 'EUR' ? '€' : $currency . ' ';
+            return $symbol . number_format($amount, 2, ',', '.');
+        }
+    };
+}
 ?>
 
 <!DOCTYPE html>

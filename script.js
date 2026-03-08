@@ -455,29 +455,27 @@ function setupEventListeners() {
 		.querySelectorAll('[data-action="start-order"]')
 		.forEach((btn) =>
 			btn.addEventListener('click', () => {
-				// after clicking "Order here" first choose order type
-				showScreen('order-type');
+				const scheme = btn.closest('.scheme');
+				if (scheme) {
+					scheme.classList.add('show-order-options');
+					const options = scheme.querySelector('.order-btn-options');
+					if (options) {
+						options.setAttribute('aria-hidden', 'false');
+					}
+				}
 			})
 		);
 
 	// Order type selection buttons
 	document
-		.querySelectorAll('.order-type-btn')
+		.querySelectorAll('.start-order-option')
 		.forEach((btn) =>
 			btn.addEventListener('click', () => {
 				const chosenType = btn.dataset.orderType;
 				if (chosenType === 'takeout' || chosenType === 'eat-in') {
 					orderType = chosenType;
 				}
-
-				// default to first category when starting the actual order
-				if (!selectedCategoryId && categories.length) {
-					selectedCategoryId = categories[0].id;
-				}
-				highlightSelectedCategory();
-				renderProductsForCategory();
-				renderCartPreview();
-				showScreen('category');
+				window.location.href = 'kies-order-begin.php';
 			})
 		);
 
