@@ -1712,7 +1712,8 @@ body {
 	display: flex;
 	flex-direction: column;
 	background: white;
-	padding: 10px 20px;
+	padding-left: 15px;
+	padding-bottom: 15px;
 	box-sizing: border-box;
 	min-width: 0;
 }
