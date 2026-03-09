@@ -1,6 +1,6 @@
 <?php
-include("includes/header.php");
 include("includes/connection.php");
+include("includes/header.php");
 
 $cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
 
@@ -103,6 +103,9 @@ try {
             </div>
         </div>
     </div>
+
+    <?php include("includes/sessie-timeout.php"); ?>
+
 </body>
 
 <script>
