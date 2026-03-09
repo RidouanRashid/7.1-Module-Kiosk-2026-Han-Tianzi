@@ -1,9 +1,11 @@
 <div id="achtergrond-sidebar">
 
-    <div class="catogorie">
-        <img src="assets/pagina-deco/icoontjes/menu-removebg-preview.png" id="menu-icoon"><br>
-        <p>Menu</p>
-    </div>
+    <a href="menu-start.php">
+        <div class="catogorie">
+            <img src="assets/pagina-deco/icoontjes/menu-removebg-preview.png" id="menu-icoon"><br>
+            <p>Menu</p>
+        </div>
+    </a>
 
     <a href="kies-orders.php?cat=1">
         <div class="catogorie">
