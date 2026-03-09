@@ -82,7 +82,7 @@ switch ($action) {
     // ─── Clear entire cart ────────────────────────────────
     case 'clear':
         $_SESSION['cart'] = [];
-        header("Location: kies-orders.php");
+        header("Location: kies-order-begin.php");
         exit;
 
     // ─── Checkout: create order in DB ─────────────────────

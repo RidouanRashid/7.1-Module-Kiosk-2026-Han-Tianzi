@@ -2,111 +2,123 @@
 include("includes/header.php");
 include("includes/connection.php");
 
-$categories = [
-	1 => "Choose your breakfast",
-	2 => "Choose your lunch & dinner",
-	3 => "Choose your handhelds",
-	4 => "Choose your sides",
-	5 => "Choose your drinks",
-	6 => "Choose your dips",
-];
+$cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
 
-$cat = isset($_GET['cat']) ? (int)$_GET['cat'] : 1;
-
-if (!array_key_exists($cat, $categories)) {
-	$cat = 1;
+if (!$cat) {
+    echo "Ongeldige categorie";
+    exit;
 }
 
-$pageTitle = $categories[$cat];
+try {
+    $stmt = $conn->prepare("
+        SELECT 
+            p.product_id,
+            p.NAME AS product_name,
+            p.price,
+            p.kcal,
+            p.`V-VG` AS food_type,
+            i.filename_transparent,
+            c.NAME AS category_name
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.category_id
+        LEFT JOIN images i ON p.image_id = i.image_id
+        WHERE p.category_id = :cat
+        ORDER BY p.product_id ASC
+    ");
+
+    $stmt->bindParam(':cat', $cat, PDO::PARAM_INT);
+    $stmt->execute();
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!$products) {
+        echo "Geen producten gevonden in deze categorie";
+        exit;
+    }
+
+    $category = $products[0]['category_name'];
+
+    $categoryFolder = $categoryFolders[$cat] ?? strtolower(str_replace(' ', '', trim($category)));
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+    exit;
+}
 ?>
 
 <body>
-	<div id="achtergrond-orders">
+    <div id="achtergrond-orders">
 
-		<?php include("includes/topbar-orderscherm.php"); ?>
+        <?php include("includes/topbar-orderscherm.php"); ?>
 
-		<div id="body-box-kies-order">
+        <div id="body-box-kies-order">
 
-			<?php include("includes/sidebar-orderscherm.php"); ?>
+            <?php include("includes/sidebar-orderscherm.php"); ?>
 
-			<div class="content-kies-orders">
+            <div class="content-kies-orders">
 
-				<div class="titel-box">
-					<p class="welkom-tekst">Welcome by Happy Herbivore</p>
-					<p class="categorie-naam-tekst"><?php echo htmlspecialchars($pageTitle); ?></p>
-				</div>
+                <div class="titel-box">
+                    <p class="welkom-tekst">Welcome by Happy Herbivore</p>
+                    <p class="categorie-naam-tekst">
+                        Choose your <?php echo htmlspecialchars($category); ?>
+                    </p>
+                </div>
 
-				<?php
-				if (!($conn instanceof PDO)) {
-					echo '<p>Database connection is unavailable right now.</p>';
-				} else {
-					try {
-						$stmt = $conn->prepare("
-						SELECT 
-						p.product_id,
-						p.NAME,
-						p.price,
-						p.kcal,
-						i.filename
-						FROM products p
-						LEFT JOIN images i ON p.image_id = i.image_id
-						WHERE p.available = 1
-						AND p.category_id = :cat
-						ORDER BY p.product_id ASC
-					");
+                <div class="productContainer">
+                    <?php foreach ($products as $v): ?>
+                        <?php
+                        $foodIcon = '';
 
-						$stmt->bindValue(':cat', $cat, PDO::PARAM_INT);
-						$stmt->execute();
-						$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				?>
+                        if ($v['food_type'] === 'Vegan') {
+                            $foodIcon = 'assets/pagina-deco/icoontjes/vegan.png';
+                        } elseif ($v['food_type'] === 'Vegetarian') {
+                            $foodIcon = 'assets/pagina-deco/icoontjes/vegetarian.png';
+                        }
+                        ?>
 
-						<div class="productContainer">
-							<?php foreach ($products as $v): ?>
-								<div class="product">
-									<a href="detail.php?id=<?php echo (int)$v['product_id']; ?>&cat=<?php echo (int)$cat; ?>">
-										<div class="img-box">
-											<?php if (!empty($v['filename'])): ?>
-												<img src="<?php echo htmlspecialchars(getImagePath($cat, $v['filename'], $categoryFolders)); ?>" alt="">
-											<?php endif; ?>
-										</div>
+                        <a class="product-link" href="detail.php?id=<?php echo (int)$v['product_id']; ?>&cat=<?php echo (int)$cat; ?>">
+                            <div class="product">
+                                <div class="img-box">
+                                    <?php if (!empty($foodIcon)): ?>
+                                        <img src="<?php echo htmlspecialchars($foodIcon); ?>" class="product-food-icon" alt="<?php echo htmlspecialchars($v['food_type']); ?>">
+                                    <?php endif; ?>
 
-										<div class="tekst-box">
-											<p class="naam-product"><?php echo htmlspecialchars($v['NAME']); ?></p>
-											<div class="prijs-kcal-box">
-												<p class="prijs"><?php echo $fmt->formatCurrency((float)$v['price'], 'EUR'); ?></p>
-												<p class="kcal"><?php echo (int)$v['kcal']; ?> kcal</p>
-											</div>
-										</div>
-									</a>
-								</div>
-							<?php endforeach; ?>
-						</div>
+                                    <?php if (!empty($v['filename_transparent'])): ?>
+                                        <img src="assets/menu/<?php echo htmlspecialchars($categoryFolder); ?>/<?php echo htmlspecialchars($v['filename_transparent']); ?>" class="product-img" alt="<?php echo htmlspecialchars($v['product_name']); ?>">
+                                    <?php endif; ?>
 
-				<?php
-					} catch (PDOException $e) {
-						echo "Error: " . $e->getMessage();
-					}
-				}
-				?>
+                                </div>
 
-			</div>
-		</div>
-	</div>
+                                <div class="tekst-box">
+                                    <p class="naam-product"><?php echo htmlspecialchars($v['product_name']); ?></p>
 
-	<script>
-		(function() {
-			const url = new URL(window.location.href);
-			const cat = url.searchParams.get("cat");
+                                    <div class="prijs-kcal-box">
+                                        <p class="prijs"><?php echo $fmt->formatCurrency((float)$v['price'], 'EUR'); ?></p>
+                                        <p class="kcal"><?php echo (int)$v['kcal']; ?> KCAL</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
 
-			if (cat) {
-				localStorage.setItem("lastCategory", cat);
-			} else {
-				const last = localStorage.getItem("lastCategory");
-				if (last) {
-					url.searchParams.set("cat", last);
-					window.location.replace(url.toString());
-				}
-			}
-		})();
-	</script>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    (function() {
+        const url = new URL(window.location.href);
+        const cat = url.searchParams.get("cat");
+
+        if (cat) {
+            localStorage.setItem("lastCategory", cat);
+        } else {
+            const last = localStorage.getItem("lastCategory");
+            if (last) {
+                url.searchParams.set("cat", last);
+                window.location.replace(url.toString());
+            }
+        }
+    })();
+</script>
 </body>

@@ -4,9 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $servername = "localhost";
-$username = "u240073_kiosk";
-$password = "zHYpEbTTCkdb33FDFsjA";
-$dbname = "u240073_kiosk";
+$username = "root";
+$password = "";
+$dbname = "happy-herbivore";
 
 $conn = null;
 

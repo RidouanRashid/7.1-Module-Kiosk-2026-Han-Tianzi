@@ -12,18 +12,12 @@ foreach ($cart as $item) {
 ?>
 
 <body>
-<div id="cart-screen" class="screen cart-screen active">
-    <main class="mock-screen-layout">
-        <section class="mock-phone-card mock-phone-card--cart">
-            <header class="mock-phone-header">
-                <img src="assets/logo/logo_big_dinosaur_transparent.webp" alt="Logo links" class="mock-phone-logo mock-phone-logo--left">
-                <img src="assets/logo/logo_big_happy_herbivore_transparent.webp" alt="Happy Herbivore" class="mock-phone-logo mock-phone-logo--center">
-                <img src="assets/pagina-deco/winkelmandje.png" alt="Winkelmand" class="mock-phone-logo mock-phone-logo--right">
-            </header>
-            <div class="mock-phone-body">
-                <h1 class="mock-order-title">YOUR ORDER</h1>
-
+<div id="achtergrond-cart">
+    <?php include("includes/topbar-orderscherm.php"); ?>
+    <div class="page-content page-content--cart">
                 <div class="cart-items-panel">
+                    <h1 class="mock-order-title">YOUR ORDER</h1>
+
                     <div class="cart-items">
                         <?php if (empty($cart)): ?>
                             <p class="cart-empty">Your cart is empty</p>
@@ -40,13 +34,13 @@ foreach ($cart as $item) {
                                         <form method="post" action="cart-actions.php" style="display:inline">
                                             <input type="hidden" name="action" value="decrease">
                                             <input type="hidden" name="product_id" value="<?php echo (int)$productId; ?>">
-                                            <button type="submit" class="cart-qty-btn">−</button>
+                                            <button type="submit" class="cart-qty-btn cart-qty-btn-decrease">−</button>
                                         </form>
                                         <span class="cart-item-qty"><?php echo (int)$item['qty']; ?></span>
                                         <form method="post" action="cart-actions.php" style="display:inline">
                                             <input type="hidden" name="action" value="increase">
                                             <input type="hidden" name="product_id" value="<?php echo (int)$productId; ?>">
-                                            <button type="submit" class="cart-qty-btn">+</button>
+                                            <button type="submit" class="cart-qty-btn cart-qty-btn-increase">+</button>
                                         </form>
                                     </div>
                                 </div>
@@ -60,10 +54,7 @@ foreach ($cart as $item) {
                             <span>TOTAL: <strong><?php echo $fmt->formatCurrency($total, 'EUR'); ?></strong></span>
                         </div>
                         <div class="mock-cart-actions">
-                            <form method="post" action="cart-actions.php" style="display:inline">
-                                <input type="hidden" name="action" value="clear">
-                                <button class="mock-btn mock-btn--cancel" type="submit">CANCEL</button>
-                            </form>
+                            <a href="kies-order-begin.php" class="mock-btn mock-btn--cancel">CANCEL</a>
                             <?php if (!empty($cart)): ?>
                                 <form method="post" action="cart-actions.php" style="display:inline">
                                     <input type="hidden" name="action" value="checkout">
@@ -73,8 +64,6 @@ foreach ($cart as $item) {
                         </div>
                     </footer>
                 </div>
-            </div>
-        </section>
-    </main>
+    </div>
 </div>
 </body>
