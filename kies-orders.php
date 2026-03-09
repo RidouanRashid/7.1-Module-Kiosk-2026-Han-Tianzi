@@ -4,6 +4,15 @@ include("includes/connection.php");
 
 $cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
 
+<<<<<<< HEAD
+=======
+$cat = isset($_GET['cat']) ? (int)$_GET['cat'] : 1;
+
+if (!array_key_exists($cat, $categories)) {
+	$cat = 1;
+$cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
+
+>>>>>>> origin/main
 if (!$cat) {
     echo "Ongeldige categorie";
     exit;
@@ -104,6 +113,68 @@ try {
         </div>
     </div>
 </body>
+<<<<<<< HEAD
+=======
+    <div id="achtergrond-orders">
+
+        <?php include("includes/topbar-orderscherm.php"); ?>
+
+        <div id="body-box-kies-order">
+
+            <?php include("includes/sidebar-orderscherm.php"); ?>
+
+            <div class="content-kies-orders">
+
+                <div class="titel-box">
+                    <p class="welkom-tekst">Welcome by Happy Herbivore</p>
+                    <p class="categorie-naam-tekst">
+                        Choose your <?php echo htmlspecialchars($category); ?>
+                    </p>
+                </div>
+
+                <div class="productContainer">
+                    <?php foreach ($products as $v): ?>
+                        <?php
+                        $foodIcon = '';
+
+                        if ($v['food_type'] === 'Vegan') {
+                            $foodIcon = 'assets/pagina-deco/icoontjes/vegan.png';
+                        } elseif ($v['food_type'] === 'Vegetarian') {
+                            $foodIcon = 'assets/pagina-deco/icoontjes/vegetarian.png';
+                        }
+                        ?>
+
+                        <a class="product-link" href="detail.php?id=<?php echo (int)$v['product_id']; ?>&cat=<?php echo (int)$cat; ?>">
+                            <div class="product">
+                                <div class="img-box">
+                                    <?php if (!empty($foodIcon)): ?>
+                                        <img src="<?php echo htmlspecialchars($foodIcon); ?>" class="product-food-icon" alt="<?php echo htmlspecialchars($v['food_type']); ?>">
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($v['filename_transparent'])): ?>
+                                        <img src="assets/menu/<?php echo htmlspecialchars($categoryFolder); ?>/<?php echo htmlspecialchars($v['filename_transparent']); ?>" class="product-img" alt="<?php echo htmlspecialchars($v['product_name']); ?>">
+                                    <?php endif; ?>
+
+                                </div>
+
+                                <div class="tekst-box">
+                                    <p class="naam-product"><?php echo htmlspecialchars($v['product_name']); ?></p>
+
+                                    <div class="prijs-kcal-box">
+                                        <p class="prijs"><?php echo $fmt->formatCurrency((float)$v['price'], 'EUR'); ?></p>
+                                        <p class="kcal"><?php echo (int)$v['kcal']; ?> KCAL</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+>>>>>>> origin/main
 
 <script>
     (function() {
@@ -121,4 +192,8 @@ try {
         }
     })();
 </script>
+<<<<<<< HEAD
 </body>
+=======
+</body>
+>>>>>>> origin/main

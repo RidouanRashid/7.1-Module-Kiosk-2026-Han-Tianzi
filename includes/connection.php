@@ -22,8 +22,8 @@ $categoryFolders = [
     1 => 'Breakfast',
     2 => 'Lunch&Dinner',
     3 => 'Handhelds',
-    4 => 'Sides&Small-Plates',
-    5 => 'Signature-Dips',
+    4 => 'Sides&SmallPlates',
+    5 => 'SignatureDips',
     6 => 'Drinks',
 ];
 
