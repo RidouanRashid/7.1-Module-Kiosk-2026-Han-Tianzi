@@ -115,6 +115,9 @@ $menuImageSets = [
 
                 </div>
             </div>
+
+            <?php include("includes/cart-footer.php"); ?>
+
         </div>
     </div>
 
