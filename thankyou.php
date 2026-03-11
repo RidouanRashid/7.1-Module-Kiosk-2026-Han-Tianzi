@@ -82,14 +82,28 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             const LEFT   = ESC + '\x61\x00';
             const BOLD_ON  = ESC + '\x45\x01';
             const BOLD_OFF = ESC + '\x45\x00';
+            const DOUBLE_ON  = GS + '\x21\x11'; // double width + double height
+            const DOUBLE_OFF = GS + '\x21\x00';
             const CUT    = GS + '\x56\x00';
             const SEP = '----------------------------------------';
 
+            const now = new Date();
+            const datum = now.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const tijd = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+
             let r = INIT + '\n';
-            r += CENTER + BOLD_ON + 'HAPPY HERBIVORE\n' + BOLD_OFF + '\n';
-            r += BOLD_ON + 'Order #' + data.pickupNumber + '\n' + BOLD_OFF;
+
+            // ── Winkelnaam (groot + bold) ──
+            r += CENTER + BOLD_ON + DOUBLE_ON;
+            r += 'HAPPY HERBIVORE\n';
+            r += DOUBLE_OFF + BOLD_OFF + '\n';
+
+            // ── Ordernummer + datum/tijd ──
+            r += CENTER + BOLD_ON + 'Order #' + data.pickupNumber + '\n' + BOLD_OFF;
+            r += datum + '  ' + tijd + '\n';
             r += LEFT + SEP + '\n';
 
+            // ── Items ──
             data.items.forEach(function(item) {
                 const name = item.qty + 'x ' + item.name;
                 const price = 'EUR ' + (item.price * item.qty).toFixed(2);
@@ -97,14 +111,47 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
                 r += name + ' '.repeat(pad) + price + '\n';
             });
 
+            // ── Totaal ──
             r += SEP + '\n' + BOLD_ON;
             const tl = 'TOTAAL:';
             const tp = 'EUR ' + data.total.toFixed(2);
             r += tl + ' '.repeat(Math.max(1, 40 - tl.length - tp.length)) + tp + '\n';
             r += BOLD_OFF + SEP + '\n\n';
-            r += CENTER + 'Bedankt voor uw bezoek!\n\n\n\n';
+
+            // ── QR-code (ESC/POS GS ( k commando) ──
+            const qrContent = 'ORDER-' + data.pickupNumber + '-' + datum.replace(/\//g, '') + '-' + tijd.replace(':', '');
+            r += buildQR(GS, qrContent);
+
+            // ── Afsluitende tekst ──
+            r += CENTER + '\n';
+            r += 'Bedankt voor uw bezoek!\n';
+            r += 'Laat deze bon zien bij het afhalen.\n';
+            r += '\n\n\n';
             r += CUT;
             return r;
+        }
+
+        // ── Build QR code ESC/POS commands ──
+        function buildQR(GS, content) {
+            const data = new TextEncoder().encode(content);
+            const len = data.length;
+            let q = '';
+
+            // QR model: Model 2
+            q += GS + '\x28\x6B\x04\x00\x31\x41\x32\x00';
+            // QR size: module size 6
+            q += GS + '\x28\x6B\x03\x00\x31\x43\x06';
+            // QR error correction: Level M (48 = '0')
+            q += GS + '\x28\x6B\x03\x00\x31\x45\x31';
+            // Store QR data
+            const storeLen = len + 3;
+            const pL = storeLen & 0xFF;
+            const pH = (storeLen >> 8) & 0xFF;
+            q += GS + '\x28\x6B' + String.fromCharCode(pL) + String.fromCharCode(pH) + '\x31\x50\x30' + content;
+            // Print QR
+            q += GS + '\x28\x6B\x03\x00\x31\x51\x30';
+
+            return q;
         }
 
         // ── Send ESC/POS data to a USB printer ──

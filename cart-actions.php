@@ -49,7 +49,8 @@ switch ($action) {
             }
         }
 
-        header("Location: cart.php");
+        $cat = (int)($_POST['cat'] ?? 1);
+        header("Location: kies-orders.php?cat=" . $cat);
         exit;
 
     // ─── Remove one product entirely ──────────────────────
