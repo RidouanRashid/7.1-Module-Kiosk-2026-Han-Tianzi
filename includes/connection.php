@@ -3,18 +3,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// $servername = "localhost";
+// $username = "u240073_kiosk";
+// $password = "zHYpEbTTCkdb33FDFsjA";
+// $dbname = "u240073_kiosk";
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "happy-herbivore";
-
-$conn = null;
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     error_log("Database connection failed: " . $e->getMessage());
+    die("Database connection failed: " . $e->getMessage());
 }
 
 // Category-id → image folder mapping

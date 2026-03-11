@@ -96,6 +96,8 @@ switch ($action) {
             }
         }
 
+        $cat = (int)($_POST['cat'] ?? 1);
+        header("Location: kies-orders.php?cat=" . $cat);
         if ($isAjax) {
             ajaxResponse(true);
         }
