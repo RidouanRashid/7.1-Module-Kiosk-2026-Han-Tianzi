@@ -140,4 +140,7 @@ include("includes/header.php");
                 }
             });
         </script>
+
+        <?php include("includes/sessie-timeout.php"); ?>
+
 </body>

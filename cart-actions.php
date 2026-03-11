@@ -1,28 +1,59 @@
 <?php
-/**
- * Cart actions handler.
- * Supports: add, remove, clear, checkout
- * Cart is stored in $_SESSION['cart'] as:
- *   [ product_id => ['qty' => int, 'name' => string, 'price' => float, 'kcal' => int, 'image' => string, 'category_id' => int] ]
- */
+ob_start();
+
+session_start();
 include("includes/connection.php");
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
+$isAjax = isset($_POST['ajax']) || isset($_GET['ajax']);
+
+function cartItemCount($cart)
+{
+    $count = 0;
+    foreach ($cart as $item) {
+        $count += (int)($item['qty'] ?? 1);
+    }
+    return $count;
+}
+
+function ajaxResponse($success = true, $extra = [])
+{
+    if (ob_get_length()) {
+        ob_clean();
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode(array_merge([
+        'success' => $success,
+        'itemCount' => cartItemCount($_SESSION['cart'] ?? [])
+    ], $extra));
+    exit;
+}
 
 switch ($action) {
 
-    // ─── Add product to cart ──────────────────────────────
+    case 'count':
+        ajaxResponse(true);
+        break;
+
     case 'add':
         $productId = (int)($_POST['product_id'] ?? 0);
-        $qty       = max(1, (int)($_POST['qty'] ?? 1));
-        $cat       = (int)($_POST['cat'] ?? 1);
+        $qty = max(1, (int)($_POST['qty'] ?? 1));
 
         if ($productId > 0 && $conn instanceof PDO) {
             $stmt = $conn->prepare("
-                SELECT p.product_id, p.category_id, p.NAME, p.price, p.kcal,
-                       i.filename
+                SELECT 
+                    p.product_id, 
+                    p.category_id, 
+                    p.NAME, 
+                    p.price, 
+                    p.kcal,
+                    i.filename,
+                    i.filename_transparent,
+                    c.NAME AS category_name
                 FROM products p
                 LEFT JOIN images i ON p.image_id = i.image_id
+                LEFT JOIN categories c ON p.category_id = c.category_id
                 WHERE p.product_id = :id
                 LIMIT 1
             ");
@@ -31,79 +62,125 @@ switch ($action) {
             $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($product) {
-                $key = $product['product_id'];
-                $imagePath = getImagePath((int)$product['category_id'], $product['filename'] ?? '', $categoryFolders);
+                $imagePath = getImagePath(
+                    (int)$product['category_id'],
+                    $product['filename'] ?? '',
+                    $categoryFolders
+                );
 
-                if (isset($_SESSION['cart'][$key])) {
-                    $_SESSION['cart'][$key]['qty'] += $qty;
+                $foundIndex = null;
+
+                foreach ($_SESSION['cart'] ?? [] as $index => $item) {
+                    if (($item['type'] ?? 'product') === 'product' && ($item['product_id'] ?? 0) == $productId) {
+                        $foundIndex = $index;
+                        break;
+                    }
+                }
+
+                if ($foundIndex !== null) {
+                    $_SESSION['cart'][$foundIndex]['qty'] += $qty;
                 } else {
-                    $_SESSION['cart'][$key] = [
-                        'name'        => $product['NAME'],
-                        'price'       => (float)$product['price'],
-                        'kcal'        => (int)$product['kcal'],
-                        'image'       => $imagePath,
+                    array_unshift($_SESSION['cart'], [
+                        'type' => 'product',
+                        'product_id' => (int)$product['product_id'],
+                        'name' => $product['NAME'],
+                        'price' => (float)$product['price'],
+                        'kcal' => (int)$product['kcal'],
+                        'image' => $imagePath,
+                        'filename_transparent' => $product['filename_transparent'] ?? '',
+                        'category_name' => $product['category_name'] ?? '',
                         'category_id' => (int)$product['category_id'],
-                        'qty'         => $qty,
-                    ];
+                        'qty' => $qty,
+                    ]);
                 }
             }
         }
 
         $cat = (int)($_POST['cat'] ?? 1);
         header("Location: kies-orders.php?cat=" . $cat);
-        exit;
+        if ($isAjax) {
+            ajaxResponse(true);
+        }
 
-    // ─── Remove one product entirely ──────────────────────
-    case 'remove':
-        $productId = (int)($_POST['product_id'] ?? 0);
-        unset($_SESSION['cart'][$productId]);
         header("Location: cart.php");
         exit;
 
-    // ─── Update quantity (+1 / -1) ────────────────────────
-    case 'increase':
-        $productId = (int)($_POST['product_id'] ?? 0);
-        if (isset($_SESSION['cart'][$productId])) {
-            $_SESSION['cart'][$productId]['qty']++;
+    case 'remove':
+        $cartIndex = (int)($_POST['product_id'] ?? $_GET['product_id'] ?? -1);
+
+        if (isset($_SESSION['cart'][$cartIndex])) {
+            unset($_SESSION['cart'][$cartIndex]);
+            $_SESSION['cart'] = array_values($_SESSION['cart']);
         }
+
+        if ($isAjax) {
+            ajaxResponse(true);
+        }
+
+        header("Location: cart.php");
+        exit;
+
+    case 'increase':
+        $cartIndex = (int)($_POST['product_id'] ?? 0);
+
+        if (isset($_SESSION['cart'][$cartIndex])) {
+            $_SESSION['cart'][$cartIndex]['qty']++;
+        }
+
+        if ($isAjax) {
+            ajaxResponse(true);
+        }
+
         header("Location: cart.php");
         exit;
 
     case 'decrease':
-        $productId = (int)($_POST['product_id'] ?? 0);
-        if (isset($_SESSION['cart'][$productId])) {
-            $_SESSION['cart'][$productId]['qty']--;
-            if ($_SESSION['cart'][$productId]['qty'] <= 0) {
-                unset($_SESSION['cart'][$productId]);
+        $cartIndex = (int)($_POST['product_id'] ?? 0);
+
+        if (isset($_SESSION['cart'][$cartIndex])) {
+            $_SESSION['cart'][$cartIndex]['qty']--;
+
+            if ($_SESSION['cart'][$cartIndex]['qty'] <= 0) {
+                unset($_SESSION['cart'][$cartIndex]);
+                $_SESSION['cart'] = array_values($_SESSION['cart']);
             }
         }
+
+        if ($isAjax) {
+            ajaxResponse(true);
+        }
+
         header("Location: cart.php");
         exit;
 
-    // ─── Clear entire cart ────────────────────────────────
     case 'clear':
         $_SESSION['cart'] = [];
+
+        if ($isAjax) {
+            ajaxResponse(true);
+        }
+
         header("Location: kies-order-begin.php");
         exit;
 
-    // ─── Checkout: create order in DB ─────────────────────
     case 'checkout':
         if (empty($_SESSION['cart']) || !($conn instanceof PDO)) {
+            if ($isAjax) {
+                ajaxResponse(false);
+            }
             header("Location: cart.php");
             exit;
         }
 
-        // Calculate total
         $total = 0;
         foreach ($_SESSION['cart'] as $item) {
-            $total += $item['price'] * $item['qty'];
+            $qty = (int)($item['qty'] ?? 1);
+            $total += ((float)$item['price']) * $qty;
         }
 
-        // Determine next pickup number (1–99 cycling)
         $lastPickup = $conn->query("SELECT MAX(pickup_number) FROM orders")->fetchColumn();
         $pickupNumber = ($lastPickup !== null && $lastPickup < 99) ? $lastPickup + 1 : 1;
 
-        // Insert order (status 1 = new/pending)
         $stmt = $conn->prepare("
             INSERT INTO orders (order_status_id, pickup_number, price_total, DATETIME)
             VALUES (:status, :pickup, :total, NOW())
@@ -113,33 +190,64 @@ switch ($action) {
             ':pickup' => $pickupNumber,
             ':total'  => $total,
         ]);
+
         $orderId = (int)$conn->lastInsertId();
 
-        // Insert order lines
         $stmtLine = $conn->prepare("
             INSERT INTO order_product (order_id, product_id, price)
             VALUES (:order_id, :product_id, :price)
         ");
-        foreach ($_SESSION['cart'] as $productId => $item) {
-            // Insert one row per unique product; store unit price × qty
-            $stmtLine->execute([
-                ':order_id'   => $orderId,
-                ':product_id' => $productId,
-                ':price'      => $item['price'] * $item['qty'],
-            ]);
+
+        foreach ($_SESSION['cart'] as $item) {
+            $qty = (int)($item['qty'] ?? 1);
+            $linePrice = ((float)$item['price']) * $qty;
+
+            if (($item['type'] ?? '') === 'menu') {
+                $menuParts = [
+                    $item['main'] ?? null,
+                    $item['side'] ?? null,
+                    $item['sauce'] ?? null,
+                    $item['drink'] ?? null
+                ];
+
+                foreach ($menuParts as $part) {
+                    if (!empty($part['product_id'])) {
+                        $stmtLine->execute([
+                            ':order_id'   => $orderId,
+                            ':product_id' => (int)$part['product_id'],
+                            ':price'      => 0
+                        ]);
+                    }
+                }
+            } else {
+                if (!empty($item['product_id'])) {
+                    $stmtLine->execute([
+                        ':order_id'   => $orderId,
+                        ':product_id' => (int)$item['product_id'],
+                        ':price'      => $linePrice,
+                    ]);
+                }
+            }
         }
 
-        // Save order info in session (including cart items for receipt), then clear cart
-        $_SESSION['last_order_id']      = $orderId;
+        $_SESSION['last_order_id'] = $orderId;
         $_SESSION['last_pickup_number'] = $pickupNumber;
-        $_SESSION['last_order_total']   = $total;
-        $_SESSION['last_order_items']   = $_SESSION['cart'];
+        $_SESSION['last_order_total'] = $total;
+        $_SESSION['last_order_items'] = $_SESSION['cart'];
+
         $_SESSION['cart'] = [];
+
+        if ($isAjax) {
+            ajaxResponse(true);
+        }
 
         header("Location: betaal.php");
         exit;
 
     default:
+        if ($isAjax) {
+            ajaxResponse(false);
+        }
         header("Location: kies-orders.php");
         exit;
 }

@@ -34,7 +34,8 @@ $categoryFolders = [
 /**
  * Build the image path for a product.
  */
-function getImagePath(int $categoryId, string $filename, array $categoryFolders): string {
+function getImagePath(int $categoryId, string $filename, array $categoryFolders): string
+{
     $folder = $categoryFolders[$categoryId] ?? 'Breakfast';
     return 'assets/menu/' . $folder . '/' . $filename;
 }
@@ -43,4 +44,3 @@ function getImagePath(int $categoryId, string $filename, array $categoryFolders)
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
-
