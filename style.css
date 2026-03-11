@@ -1132,6 +1132,45 @@ body {
 	padding-top: 20px;
 }
 
+/* filter buttons */
+.filter-box {
+	display: flex;
+	gap: 15px;
+	margin-top: 15px;
+}
+
+.filter-btn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 20px;
+	border: 3px solid #8cd003;
+	border-radius: 50px;
+	background-color: white;
+	cursor: pointer;
+	font-family: 'Noto Sans', sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	color: #333;
+	transition: all 0.2s ease;
+}
+
+.filter-btn img {
+	width: 24px;
+	height: 24px;
+	object-fit: contain;
+}
+
+.filter-btn.active {
+	background-color: #FF7520;
+	border-color: #FF7520;
+	color: white;
+}
+
+.filter-btn:not(.active):hover {
+	background-color: #f0f9e0;
+}
+
 /* slideshow */
 .slideshow-box {
 	margin: 50px auto;

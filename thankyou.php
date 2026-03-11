@@ -73,8 +73,98 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             if (type) printStatus.classList.add('print-status--' + type);
         }
 
-        // ── Build ESC/POS receipt ──
-        function buildReceipt(data) {
+        // ── Column width for 80mm thermal printer (42 chars at Font A) ──
+        const COL = 42;
+
+        // ── Pad a line: left-text .... right-text ──
+        function padLine(left, right, width) {
+            const gap = Math.max(1, width - left.length - right.length);
+            return left + ' '.repeat(gap) + right;
+        }
+
+        // ── Load image and convert to monochrome ESC/POS raster bytes ──
+        function loadLogoRaster(src, maxWidth) {
+            return new Promise(function(resolve) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = function() {
+                    // Scale to maxWidth keeping aspect ratio
+                    const scale = Math.min(1, maxWidth / img.width);
+                    const w = Math.floor(img.width * scale);
+                    const h = Math.floor(img.height * scale);
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    // White background for transparency
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, w, h);
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    const imageData = ctx.getImageData(0, 0, w, h).data;
+
+                    // ESC/POS raster: width must be multiple of 8
+                    const byteWidth = Math.ceil(w / 8);
+                    const raster = new Uint8Array(byteWidth * h);
+
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 0; x < w; x++) {
+                            const idx = (y * w + x) * 4;
+                            const gray = imageData[idx] * 0.299 + imageData[idx+1] * 0.587 + imageData[idx+2] * 0.114;
+                            // Threshold: dark pixels become 1 (black ink)
+                            if (gray < 128) {
+                                const bytePos = y * byteWidth + Math.floor(x / 8);
+                                raster[bytePos] |= (0x80 >> (x % 8));
+                            }
+                        }
+                    }
+
+                    resolve({ bytes: raster, byteWidth: byteWidth, height: h });
+                };
+                img.onerror = function() {
+                    resolve(null); // fallback: no logo
+                };
+                img.src = src;
+            });
+        }
+
+        // ── Build GS v 0 raster bit-image command ──
+        function rasterImageCmd(raster) {
+            // GS v 0  m  xL xH  yL yH  d1...dk
+            const xL = raster.byteWidth & 0xFF;
+            const xH = (raster.byteWidth >> 8) & 0xFF;
+            const yL = raster.height & 0xFF;
+            const yH = (raster.height >> 8) & 0xFF;
+            const header = new Uint8Array([0x1D, 0x76, 0x30, 0x00, xL, xH, yL, yH]);
+            const combined = new Uint8Array(header.length + raster.bytes.length);
+            combined.set(header, 0);
+            combined.set(raster.bytes, header.length);
+            return combined;
+        }
+
+        // ── Encode string to Uint8Array ──
+        const encoder = new TextEncoder();
+        function strBytes(s) { return encoder.encode(s); }
+
+        // ── Concatenate Uint8Arrays ──
+        function concatBytes(arrays) {
+            let total = 0;
+            arrays.forEach(function(a) { total += a.length; });
+            const result = new Uint8Array(total);
+            let offset = 0;
+            arrays.forEach(function(a) {
+                result.set(a, offset);
+                offset += a.length;
+            });
+            return result;
+        }
+
+        // ── Preload the dino logo ──
+        let logoRasterPromise = loadLogoRaster('assets/logo/logo_big_dinosaur_transparent.webp', 200);
+
+        // ── Build ESC/POS receipt (async for image loading) ──
+        async function buildReceipt(data) {
             const ESC  = '\x1B';
             const GS   = '\x1D';
             const INIT = ESC + '\x40';
@@ -82,53 +172,106 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             const LEFT   = ESC + '\x61\x00';
             const BOLD_ON  = ESC + '\x45\x01';
             const BOLD_OFF = ESC + '\x45\x00';
-            const DOUBLE_ON  = GS + '\x21\x11'; // double width + double height
+            const DOUBLE_ON  = GS + '\x21\x11';
             const DOUBLE_OFF = GS + '\x21\x00';
             const CUT    = GS + '\x56\x00';
-            const SEP = '----------------------------------------';
+            const FEED3  = ESC + '\x64\x03';
+            const SEP = '------------------------------------------';
 
-            const now = new Date();
-            const datum = now.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            const tijd = now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+            const now   = new Date();
+            const datum = now.toLocaleDateString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric' });
+            const tijd  = now.toLocaleTimeString('nl-NL', { hour:'2-digit', minute:'2-digit' });
 
-            let r = INIT + '\n';
+            const parts = [];
 
-            // ── Winkelnaam (groot + bold) ──
-            r += CENTER + BOLD_ON + DOUBLE_ON;
-            r += 'HAPPY HERBIVORE\n';
-            r += DOUBLE_OFF + BOLD_OFF + '\n';
+            parts.push(strBytes(INIT));
 
-            // ── Ordernummer + datum/tijd ──
-            r += CENTER + BOLD_ON + 'Order #' + data.pickupNumber + '\n' + BOLD_OFF;
-            r += datum + '  ' + tijd + '\n';
+            // ── Dino logo (raster image) ──
+            parts.push(strBytes(CENTER));
+            const logoRaster = await logoRasterPromise;
+            if (logoRaster) {
+                parts.push(rasterImageCmd(logoRaster));
+                parts.push(strBytes('\n'));
+            }
+
+            // ── Brand name ──
+            parts.push(strBytes(CENTER + BOLD_ON + DOUBLE_ON));
+            parts.push(strBytes('HAPPY HERBIVORE\n'));
+            parts.push(strBytes(DOUBLE_OFF + BOLD_OFF + '\n'));
+
+            // ── Separator ──
+            parts.push(strBytes(LEFT + SEP + '\n'));
+
+            // ── Order number (large) ──
+            parts.push(strBytes(CENTER + BOLD_ON + DOUBLE_ON));
+            parts.push(strBytes('ORDER #' + data.pickupNumber + '\n'));
+            parts.push(strBytes(DOUBLE_OFF + BOLD_OFF));
+
+            // ── Date / time ──
+            parts.push(strBytes(CENTER));
+            parts.push(strBytes(datum + '  |  ' + tijd + '\n'));
+            parts.push(strBytes(LEFT + SEP + '\n\n'));
+
+            // ── Column headers ──
+            let r = '';
+            r += BOLD_ON;
+            r += padLine('ITEM', 'PRIJS', COL) + '\n';
+            r += BOLD_OFF;
             r += LEFT + SEP + '\n';
 
             // ── Items ──
             data.items.forEach(function(item) {
-                const name = item.qty + 'x ' + item.name;
-                const price = 'EUR ' + (item.price * item.qty).toFixed(2);
-                const pad = Math.max(1, 40 - name.length - price.length);
-                r += name + ' '.repeat(pad) + price + '\n';
+                const lineTotal = item.price * item.qty;
+                const qtyLabel  = item.qty + 'x';
+                const nameStr   = ' ' + item.name;
+                const priceStr  = 'EUR ' + lineTotal.toFixed(2);
+
+                r += padLine(qtyLabel + nameStr, priceStr, COL) + '\n';
+
+                if (item.qty > 1) {
+                    const unitNote = '   @ EUR ' + item.price.toFixed(2) + ' per stuk';
+                    r += unitNote + '\n';
+                }
             });
 
-            // ── Totaal ──
-            r += SEP + '\n' + BOLD_ON;
-            const tl = 'TOTAAL:';
-            const tp = 'EUR ' + data.total.toFixed(2);
-            r += tl + ' '.repeat(Math.max(1, 40 - tl.length - tp.length)) + tp + '\n';
-            r += BOLD_OFF + SEP + '\n\n';
+            // ── Subtotal / Total ──
+            r += LEFT + SEP + '\n';
+            r += BOLD_ON;
+            r += padLine('TOTAAL', 'EUR ' + data.total.toFixed(2), COL) + '\n';
+            r += BOLD_OFF;
+            r += LEFT + SEP + '\n';
 
-            // ── QR-code (ESC/POS GS ( k commando) ──
-            const qrContent = 'ORDER-' + data.pickupNumber + '-' + datum.replace(/\//g, '') + '-' + tijd.replace(':', '');
-            r += buildQR(GS, qrContent);
+            // ── Payment confirmation ──
+            r += '\n' + CENTER;
+            r += 'BETAALD - PIN\n\n';
 
-            // ── Afsluitende tekst ──
-            r += CENTER + '\n';
-            r += 'Bedankt voor uw bezoek!\n';
-            r += 'Laat deze bon zien bij het afhalen.\n';
-            r += '\n\n\n';
-            r += CUT;
-            return r;
+            parts.push(strBytes(r));
+
+            // ── QR code with discount link ──
+            const discountCode = 'HH10-' + data.pickupNumber;
+            const qrContent = 'https://u240073.gluwebsite.nl/kiosk?code=' + discountCode;
+            parts.push(strBytes(CENTER));
+            parts.push(strBytes(buildQR(GS, qrContent)));
+
+            // ── QR explanation ──
+            let qrText = '';
+            qrText += CENTER + '\n';
+            qrText += BOLD_ON + 'Scan voor 10% korting\n' + BOLD_OFF;
+            qrText += 'op je volgende bestelling!\n';
+            qrText += 'Code: ' + discountCode + '\n\n';
+
+            // ── Footer ──
+            qrText += SEP + '\n\n';
+            qrText += BOLD_ON + 'Bedankt voor uw bezoek!\n' + BOLD_OFF;
+            qrText += 'Laat deze bon zien bij het afhalen.\n\n';
+            qrText += '~ 100% Plant-Based Goodness ~\n';
+            qrText += 'u240073.gluwebsite.nl/kiosk\n';
+            qrText += '\n\n\n\n';
+            qrText += FEED3;
+            qrText += CUT;
+            parts.push(strBytes(qrText));
+
+            return concatBytes(parts);
         }
 
         // ── Build QR code ESC/POS commands ──
@@ -154,7 +297,7 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             return q;
         }
 
-        // ── Send ESC/POS data to a USB printer ──
+        // ── Send ESC/POS binary data to a USB printer ──
         async function sendToPrinter(printer, data) {
             await printer.open();
             if (printer.configuration === null) {
@@ -162,14 +305,20 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             }
             try { await printer.claimInterface(0); } catch(e) { /* already claimed */ }
 
-            const encoded = new TextEncoder().encode(data);
+            // data is already a Uint8Array from buildReceipt
+            const bytes = (data instanceof Uint8Array) ? data : encoder.encode(data);
             const intf = printer.configuration.interfaces[0].alternates[0];
             const ep = intf.endpoints.find(e => e.direction === 'out');
 
-            if (ep) {
-                await printer.transferOut(ep.endpointNumber, encoded);
-            } else {
-                await printer.transferOut(1, encoded);
+            // Send in chunks of 4096 bytes to avoid USB buffer overflow
+            const CHUNK = 4096;
+            for (let i = 0; i < bytes.length; i += CHUNK) {
+                const chunk = bytes.slice(i, Math.min(i + CHUNK, bytes.length));
+                if (ep) {
+                    await printer.transferOut(ep.endpointNumber, chunk);
+                } else {
+                    await printer.transferOut(1, chunk);
+                }
             }
             setTimeout(() => { try { printer.close(); } catch(e){} }, 1000);
         }
@@ -182,7 +331,8 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
                 const printer = devices.find(d => PRINTER_VENDORS.includes(d.vendorId));
                 if (printer) {
                     setStatus('Bon wordt geprint...', 'loading');
-                    await sendToPrinter(printer, buildReceipt(receiptData));
+                    const receipt = await buildReceipt(receiptData);
+                    await sendToPrinter(printer, receipt);
                     setStatus('✓ Bon geprint!', 'success');
                     printBtn.style.display = 'none';
                     return true;
@@ -215,7 +365,8 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
 
                     if (printer) {
                         setStatus('Bon wordt geprint...', 'loading');
-                        await sendToPrinter(printer, buildReceipt(receiptData));
+                        const receipt = await buildReceipt(receiptData);
+                        await sendToPrinter(printer, receipt);
                         setStatus('✓ Bon geprint!', 'success');
                         printBtn.style.display = 'none';
                         return;
@@ -236,10 +387,13 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
                 const resp = await fetch('xprint.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'print',
-                        receipt: buildReceipt(receiptData)
-                    })
+                    body: await (async function() {
+                        const receipt = await buildReceipt(receiptData);
+                        // Convert Uint8Array to base64 for JSON transport
+                        let binary = '';
+                        for (let i = 0; i < receipt.length; i++) binary += String.fromCharCode(receipt[i]);
+                        return JSON.stringify({ action: 'print', receipt: btoa(binary) });
+                    })()
                 });
                 const result = await resp.json();
                 if (result.success) {
@@ -255,10 +409,60 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
 
             // Method 3: Browser print dialog as last resort
             setStatus('Printer niet gevonden. Probeer browser print...', 'error');
-            const printWindow = window.open('', '_blank', 'width=300,height=600');
+            const printWindow = window.open('', '_blank', 'width=320,height=700');
             if (printWindow) {
-                const receipt = buildReceipt(receiptData).replace(/\x1B[^a-zA-Z]*[a-zA-Z]/g, '').replace(/\x1D[^a-zA-Z]*[a-zA-Z]/g, '');
-                printWindow.document.write('<html><head><title>Bon</title><style>body{font-family:monospace;font-size:12px;white-space:pre-wrap;width:280px;margin:0 auto;padding:20px;}@media print{body{margin:0;padding:0;}}</style></head><body>' + receipt.replace(/\n/g, '<br>') + '</body></html>');
+                const d = receiptData;
+                const now = new Date();
+                const datum = now.toLocaleDateString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric' });
+                const tijd  = now.toLocaleTimeString('nl-NL', { hour:'2-digit', minute:'2-digit' });
+
+                let itemsHtml = '';
+                d.items.forEach(function(item) {
+                    const lineTotal = (item.price * item.qty).toFixed(2);
+                    itemsHtml += '<tr>'
+                        + '<td style="text-align:left">' + item.qty + 'x ' + item.name + '</td>'
+                        + '<td style="text-align:right;white-space:nowrap">EUR ' + lineTotal + '</td>'
+                        + '</tr>';
+                    if (item.qty > 1) {
+                        itemsHtml += '<tr><td colspan="2" style="text-align:left;font-size:10px;color:#666;padding-left:18px">@ EUR ' + item.price.toFixed(2) + ' per stuk</td></tr>';
+                    }
+                });
+
+                const html = '<!DOCTYPE html><html><head><title>Bon</title>'
+                    + '<style>'
+                    + 'body{font-family:"Courier New",monospace;font-size:13px;width:280px;margin:0 auto;padding:16px;color:#222;}'
+                    + '.logo{text-align:center;margin-bottom:8px;}'
+                    + '.logo img{width:120px;height:auto;}'
+                    + '.brand{text-align:center;font-weight:bold;font-size:16px;letter-spacing:2px;margin:4px 0 2px;}'
+                    + '.sub{text-align:center;font-size:11px;margin-bottom:8px;}'
+                    + '.sep{border:none;border-top:1px dashed #333;margin:8px 0;}'
+                    + '.order{text-align:center;font-size:22px;font-weight:bold;margin:6px 0 2px;}'
+                    + '.datetime{text-align:center;font-size:11px;margin-bottom:4px;}'
+                    + 'table{width:100%;border-collapse:collapse;}'
+                    + 'th{text-align:left;font-size:11px;border-bottom:1px solid #333;padding:2px 0;}'
+                    + 'th:last-child{text-align:right;}'
+                    + 'td{padding:3px 0;font-size:12px;vertical-align:top;}'
+                    + '.total td{font-weight:bold;border-top:1px solid #333;padding-top:6px;}'
+                    + '.footer{text-align:center;font-size:11px;margin-top:12px;}'
+                    + '.footer b{display:block;margin-bottom:2px;}'
+                    + '@media print{body{margin:0;padding:8px;}}'
+                    + '</style></head><body>'
+                    + '<div class="logo"><img src="assets/logo/logo_big_dinosaur_transparent.webp" alt="Happy Herbivore"></div>'
+                    + '<div class="brand">HAPPY HERBIVORE</div>'
+                    + '<div class="sub">100% Plant-Based Goodness</div>'
+                    + '<hr class="sep">'
+                    + '<div class="order">ORDER #' + d.pickupNumber + '</div>'
+                    + '<div class="datetime">' + datum + '  |  ' + tijd + '</div>'
+                    + '<hr class="sep">'
+                    + '<table><thead><tr><th>ITEM</th><th>PRIJS</th></tr></thead>'
+                    + '<tbody>' + itemsHtml
+                    + '<tr class="total"><td>TOTAAL</td><td style="text-align:right">EUR ' + d.total.toFixed(2) + '</td></tr>'
+                    + '</tbody></table>'
+                    + '<hr class="sep">'
+                    + '<div class="footer"><b>Bedankt voor uw bezoek!</b>Laat deze bon zien bij het afhalen.<br><br>~ www.happyherbivore.nl ~</div>'
+                    + '</body></html>';
+
+                printWindow.document.write(html);
                 printWindow.document.close();
                 printWindow.print();
             }

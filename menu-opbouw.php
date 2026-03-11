@@ -79,19 +79,19 @@ function getCategoryFolder($categoryId, $categoryName, $categoryFolders = [])
     }
 
     $fallbackFolders = [
-        1 => 'breakfast',
-        2 => 'lunchdinner',
-        3 => 'handhelds',
-        4 => 'sides',
-        5 => 'dips',
-        6 => 'drinks'
+        1 => 'Breakfast',
+        2 => 'Lunch&Dinner',
+        3 => 'Handhelds',
+        4 => 'Sides&SmallPlates',
+        5 => 'SignatureDips',
+        6 => 'Drinks'
     ];
 
     if (isset($fallbackFolders[$categoryId])) {
         return $fallbackFolders[$categoryId];
     }
 
-    return strtolower(str_replace([' ', '&'], ['', ''], trim($categoryName)));
+    return str_replace([' '], [''], trim($categoryName));
 }
 
 function getMenuDisplayName($menu)

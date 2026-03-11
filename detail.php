@@ -44,7 +44,7 @@ try {
     $category = $product['category_name'];
     $cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
 
-    $categoryFolder = $categoryFolders[$cat] ?? strtolower(str_replace(' ', '', trim($category)));
+    $categoryFolder = $categoryFolders[$cat] ?? str_replace(' ', '', trim($category));
 
     $foodType = $product['food_type'];
     $foodIcon = '';
