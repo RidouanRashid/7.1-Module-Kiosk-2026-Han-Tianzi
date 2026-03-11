@@ -15,7 +15,7 @@ foreach ($cart as $item) {
 
 function getCategoryFolderName($categoryName)
 {
-    return strtolower(str_replace([' ', '&'], ['', ''], trim($categoryName)));
+    return strtolower(str_replace([' '], [''], trim($categoryName)));
 }
 ?>
 
@@ -107,7 +107,7 @@ function getCategoryFolderName($categoryName)
                     </div>
 
                     <div class="mock-cart-actions">
-                        <a href="kies-order-begin.php" class="mock-btn mock-btn--cancel">CANCEL</a>
+                        <a href="kies-orders.php?cat=<?php echo (int)($_SESSION['last_cat'] ?? 1); ?>" class="mock-btn mock-btn--cancel">CANCEL</a>
 
                         <?php if (!empty($cart)): ?>
                             <form method="post" action="cart-actions.php" style="display:inline">

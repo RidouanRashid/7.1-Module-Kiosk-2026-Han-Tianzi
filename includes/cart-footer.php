@@ -5,8 +5,18 @@ if (session_status() === PHP_SESSION_NONE) {
 
 include_once(__DIR__ . "/connection.php");
 
-if (!isset($fmt) || !($fmt instanceof NumberFormatter)) {
-    $fmt = new NumberFormatter('nl_NL', NumberFormatter::CURRENCY);
+if (!isset($fmt)) {
+    if (class_exists('NumberFormatter')) {
+        $fmt = new NumberFormatter('nl_NL', NumberFormatter::CURRENCY);
+    } else {
+        $fmt = new class {
+            public function formatCurrency(float $amount, string $currency): string
+            {
+                $symbol = $currency === 'EUR' ? '€' : $currency . ' ';
+                return $symbol . number_format($amount, 2, ',', '.');
+            }
+        };
+    }
 }
 
 $cart = $_SESSION['cart'] ?? [];

@@ -455,14 +455,13 @@ function setupEventListeners() {
 		.querySelectorAll('[data-action="start-order"]')
 		.forEach((btn) =>
 			btn.addEventListener('click', () => {
-				const scheme = btn.closest('.scheme');
-				if (scheme) {
+				document.querySelectorAll('.scheme').forEach((scheme) => {
 					scheme.classList.add('show-order-options');
 					const options = scheme.querySelector('.order-btn-options');
 					if (options) {
 						options.setAttribute('aria-hidden', 'false');
 					}
-				}
+				});
 			})
 		);
 

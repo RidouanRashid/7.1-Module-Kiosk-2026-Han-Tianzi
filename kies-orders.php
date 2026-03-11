@@ -5,9 +5,15 @@ include("includes/header.php");
 $cat = filter_input(INPUT_GET, 'cat', FILTER_VALIDATE_INT);
 
 if (!$cat) {
-    echo "Ongeldige categorie";
+    if (!empty($_SESSION['last_cat'])) {
+        header("Location: kies-orders.php?cat=" . (int)$_SESSION['last_cat']);
+        exit;
+    }
+    header("Location: kies-order-begin.php");
     exit;
 }
+
+$_SESSION['last_cat'] = $cat;
 
 try {
     $stmt = $conn->prepare("

@@ -19,10 +19,10 @@ if (empty($_SESSION['last_order_id'])) {
                         <img src="assets/pagina-deco/icoontjes/pin.png" alt="Payment terminal" class="instructions-image">
                     </div>
         </div>
-        <div class="betaal-footer">
-            <a href="thankyou.php" style="text-decoration:none;">
-                <button class="mock-btn mock-btn--confirm" type="button">I PAID</button>
-            </a>
-        </div>
     </div>
+    <script>
+        setTimeout(function() {
+            window.location.href = "thankyou.php";
+        }, 2000);
+    </script>
 </body>
