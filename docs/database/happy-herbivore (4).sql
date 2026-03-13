@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2026 at 08:53 AM
+-- Generation Time: Mar 13, 2026 at 01:16 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -108,13 +108,7 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `order_status_id`, `pickup_number`, `price_total`, `DATETIME`) VALUES
-(1, 1, 1, 10.50, '2026-03-04 14:05:34'),
-(2, 2, 2, 44.00, '2026-03-04 14:06:10'),
-(3, 2, 3, 1.00, '2026-03-06 11:09:52'),
-(4, 2, 4, 1.00, '2026-03-06 11:10:56'),
-(5, 2, 5, 38.00, '2026-03-06 11:13:24'),
-(6, 2, 6, 54.00, '2026-03-06 11:26:39'),
-(7, 2, 7, 17.00, '2026-03-06 13:05:59');
+(1, 2, 1, 19.00, '2026-03-13 01:15:12');
 
 -- --------------------------------------------------------
 
@@ -123,23 +117,22 @@ INSERT INTO `orders` (`order_id`, `order_status_id`, `pickup_number`, `price_tot
 --
 
 CREATE TABLE `order_product` (
+  `order_product_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `price` decimal(10,2) NOT NULL
+  `price` decimal(10,2) NOT NULL,
+  `is_ready` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `order_product`
 --
 
-INSERT INTO `order_product` (`order_id`, `product_id`, `price`) VALUES
-(1, 5, 10.50),
-(2, 8, 44.00),
-(3, 19, 1.00),
-(4, 19, 1.00),
-(5, 6, 38.00),
-(6, 10, 54.00),
-(7, 9, 17.00);
+INSERT INTO `order_product` (`order_product_id`, `order_id`, `product_id`, `price`, `is_ready`) VALUES
+(1, 1, 6, 9.50, 1),
+(2, 1, 25, 3.00, 1),
+(3, 1, 4, 0.00, 1),
+(4, 1, 17, 0.00, 1);
 
 -- --------------------------------------------------------
 
@@ -239,8 +232,10 @@ ALTER TABLE `orders`
 -- Indexes for table `order_product`
 --
 ALTER TABLE `order_product`
-  ADD PRIMARY KEY (`order_id`,`product_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD PRIMARY KEY (`order_product_id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `idx_order_id` (`order_id`),
+  ADD KEY `idx_product_id` (`product_id`);
 
 --
 -- Indexes for table `order_status`
@@ -276,7 +271,13 @@ ALTER TABLE `images`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `order_product`
+--
+ALTER TABLE `order_product`
+  MODIFY `order_product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `order_status`

@@ -6,9 +6,9 @@ $pickupNumber = $_SESSION['last_pickup_number'] ?? 0;
 $orderItems   = $_SESSION['last_order_items'] ?? [];
 $orderTotal   = $_SESSION['last_order_total'] ?? 0;
 
-// Update order status to "paid" (status 2) if we have order info
+// Nieuwe order op "bereiden" laten staan
 if (!empty($_SESSION['last_order_id']) && $conn instanceof PDO) {
-    $stmt = $conn->prepare("UPDATE orders SET order_status_id = 2 WHERE order_id = :id");
+    $stmt = $conn->prepare("UPDATE orders SET order_status_id = 1 WHERE order_id = :id");
     $stmt->execute([':id' => $_SESSION['last_order_id']]);
 }
 
@@ -18,6 +18,7 @@ $receiptData = [
     'items' => [],
     'total' => (float)$orderTotal,
 ];
+
 foreach ($orderItems as $item) {
     $receiptData['items'][] = [
         'name'  => $item['name'],
@@ -27,25 +28,38 @@ foreach ($orderItems as $item) {
 }
 
 // Clear order session data
-unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['last_order_items'], $_SESSION['last_order_total']);
+unset(
+    $_SESSION['last_order_id'],
+    $_SESSION['last_pickup_number'],
+    $_SESSION['last_order_items'],
+    $_SESSION['last_order_total']
+);
 ?>
 
 <body>
     <div id="achtergrond-thankyou">
         <?php include("includes/topbar-orderscherm.php"); ?>
+
         <div class="page-content page-content--thankyou">
-                    <div class="mock-info-panel mock-info-panel--thankyou">
-                        <p class="mock-info-title">Your order number</p>
-                        <p id="order-number-display" class="order-number-display">#<?php echo (int)$pickupNumber; ?></p>
-                        <p class="thankyou-text">Thank you for ordering, see you next time!</p>
-                        <div id="print-status" class="print-status"></div>
-                        <button id="print-receipt-btn" class="mock-btn mock-btn--confirm print-bon-btn" type="button">
-                            <i class="fa-solid fa-print"></i> PRINT BON
-                        </button>
-                        <p class="countdown-text">Nieuwe bestelling in <span id="countdown-value">15</span>s</p>
-                    </div>
-                </div>
+            <div class="mock-info-panel mock-info-panel--thankyou">
+                <p class="mock-info-title">Your order number</p>
+                <p id="order-number-display" class="order-number-display">
+                    #<?php echo (int)$pickupNumber; ?>
+                </p>
+                <p class="thankyou-text">Thank you for ordering, see you next time!</p>
+
+                <div id="print-status" class="print-status"></div>
+
+                <button id="print-receipt-btn" class="mock-btn mock-btn--confirm print-bon-btn" type="button">
+                    <i class="fa-solid fa-print"></i> PRINT BON
+                </button>
+
+                <p class="countdown-text">
+                    Nieuwe bestelling in <span id="countdown-value">15</span>s
+                </p>
             </div>
+        </div>
+    </div>
 
     <script>
     (function() {
@@ -303,7 +317,6 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             if (printer.configuration === null) {
                 await printer.selectConfiguration(1);
             }
-            try { await printer.claimInterface(0); } catch(e) { /* already claimed */ }
 
             // data is already a Uint8Array from buildReceipt
             const bytes = (data instanceof Uint8Array) ? data : encoder.encode(data);
@@ -340,28 +353,15 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
             } catch (e) {
                 console.warn('Auto-print failed:', e);
             }
-            return false;
-        }
 
-        // ── Manual print (button click - has user gesture) ──
-        async function manualPrint() {
-            printBtn.disabled = true;
-            printBtn.textContent = 'BEZIG...';
+            async function printReceipt() {
+                if (!('usb' in navigator)) {
+                    setStatus('WebUSB wordt niet ondersteund in deze browser.', 'error');
+                    return;
+                }
 
-            // Method 1: Try WebUSB
-            if (navigator.usb) {
                 try {
-                    // First check already-authorized devices
-                    const devices = await navigator.usb.getDevices();
-                    let printer = devices.find(d => PRINTER_VENDORS.includes(d.vendorId));
-
-                    // If none, prompt user to select (works because we have user gesture)
-                    if (!printer) {
-                        setStatus('Selecteer uw printer in het popup-venster...', 'loading');
-                        printer = await navigator.usb.requestDevice({
-                            filters: PRINTER_VENDORS.map(v => ({ vendorId: v }))
-                        });
-                    }
+                    setStatus('Printer verbinden...', 'info');
 
                     if (printer) {
                         setStatus('Bon wordt geprint...', 'loading');
@@ -378,8 +378,6 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
                     } else {
                         setStatus('USB fout: ' + e.message, 'error');
                     }
-                }
-            }
 
             // Method 2: Fallback to network print (PHP backend)
             try {
@@ -403,8 +401,6 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
                 } else {
                     setStatus('Netwerk print fout: ' + (result.error || 'onbekend'), 'error');
                 }
-            } catch (e) {
-                console.warn('Network print failed:', e);
             }
 
             // Method 3: Browser print dialog as last resort
@@ -467,36 +463,21 @@ unset($_SESSION['last_order_id'], $_SESSION['last_pickup_number'], $_SESSION['la
                 printWindow.print();
             }
 
-            printBtn.disabled = false;
-            printBtn.innerHTML = '<i class="fa-solid fa-print"></i> PRINT BON';
-        }
+            const countdownValue = document.getElementById('countdown-value');
+            let seconds = 15;
 
-        // ── Button click handler ──
-        if (printBtn) {
-            printBtn.addEventListener('click', manualPrint);
-        }
+            const timer = setInterval(function() {
+                seconds--;
 
-        // ── Auto-print on load for already-authorized printers ──
-        if (receiptData.items.length > 0) {
-            tryAutoPrint();
-        } else {
-            if (printBtn) printBtn.style.display = 'none';
-        }
+                if (countdownValue) {
+                    countdownValue.textContent = seconds;
+                }
 
-        // ── Countdown to redirect ──
-        let countdown = 15;
-        const countdownElement = document.getElementById('countdown-value');
-
-        const timer = setInterval(function() {
-            countdown -= 1;
-            if (countdownElement) {
-                countdownElement.textContent = String(Math.max(countdown, 0));
-            }
-            if (countdown <= 0) {
-                clearInterval(timer);
-                window.location.href = 'index.php';
-            }
-        }, 1000);
-    })();
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    window.location.href = "index.php";
+                }
+            }, 1000);
+        })();
     </script>
 </body>
