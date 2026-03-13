@@ -15,7 +15,7 @@ foreach ($cart as $item) {
 
 function getCategoryFolderName($categoryName)
 {
-    return strtolower(str_replace([' '], [''], trim($categoryName)));
+    return str_replace([' '], [''], trim($categoryName));
 }
 ?>
 

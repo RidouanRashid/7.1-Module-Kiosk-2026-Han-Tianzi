@@ -35,7 +35,7 @@ function getCategoryFolderForCart($categoryId, $categoryName, $categoryFolders)
         return $categoryFolders[$categoryId];
     }
 
-    return strtolower(str_replace([' ', '&'], ['', ''], trim($categoryName)));
+    return str_replace([' '], [''], trim($categoryName));
 }
 
 function getTransparentImageForProduct($conn, $productId, $categoryFolders)

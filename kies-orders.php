@@ -43,7 +43,7 @@ try {
 
     $category = $products[0]['category_name'];
 
-    $categoryFolder = $categoryFolders[$cat] ?? strtolower(str_replace(' ', '', trim($category)));
+    $categoryFolder = $categoryFolders[$cat] ?? str_replace(' ', '', trim($category));
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit;
@@ -66,6 +66,22 @@ try {
                     <p class="categorie-naam-tekst">
                         Choose your <?php echo htmlspecialchars($category); ?>
                     </p>
+
+                    <div class="filter-box">
+                        <button class="filter-btn active" data-filter="all">
+                            <img src="assets/pagina-deco/icoontjes/vegan.png" alt="Vegan">
+                            <span>MIXED</span>
+                            <img src="assets/pagina-deco/icoontjes/vegetarian.png" alt="Vegetarian">
+                        </button>
+                        <button class="filter-btn" data-filter="Vegan">
+                            <img src="assets/pagina-deco/icoontjes/vegan.png" alt="Vegan">
+                            <span>VEGAN</span>
+                        </button>
+                        <button class="filter-btn" data-filter="Vegetarian">
+                            <img src="assets/pagina-deco/icoontjes/vegetarian.png" alt="Vegetarian">
+                            <span>VEGETARIAN</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="productContainer">
@@ -80,7 +96,7 @@ try {
                         }
                         ?>
 
-                        <a class="product-link" href="detail.php?id=<?php echo (int)$v['product_id']; ?>&cat=<?php echo (int)$cat; ?>">
+                        <a class="product-link" href="detail.php?id=<?php echo (int)$v['product_id']; ?>&cat=<?php echo (int)$cat; ?>" data-food-type="<?php echo htmlspecialchars($v['food_type'] ?? ''); ?>">
                             <div class="product">
                                 <div class="img-box">
                                     <?php if (!empty($foodIcon)): ?>
@@ -131,4 +147,24 @@ try {
             }
         }
     })();
+
+    // Food type filter
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filter = btn.getAttribute('data-filter');
+
+            document.querySelectorAll('.product-link').forEach(link => {
+                const type = link.getAttribute('data-food-type');
+
+                if (filter === 'all' || type === filter) {
+                    link.style.display = '';
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+        });
+    });
 </script>

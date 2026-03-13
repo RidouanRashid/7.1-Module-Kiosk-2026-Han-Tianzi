@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // $servername = "localhost";
 // $username = "u240073_kiosk";
-// $password = "zHYpEbTTCkdb33FDFsjA";
+// $password = "GTRe3mKNUu3XXUhDLTm6";
 // $dbname = "u240073_kiosk";
 
 $servername = "localhost";
